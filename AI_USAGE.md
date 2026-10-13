@@ -123,3 +123,12 @@ The take-home task explicitly allows AI, and evaluators want to understand **how
 ## Final reflection — complete before submission
 
 Explain which decisions were human-made, how the candidate validated AI output, what genuine defects were fixed, and what limitations remain. Avoid vague claims such as “AI built everything perfectly.”
+
+### B04 — verified by Codex, 2026-10-13
+
+- Implemented UUID retrieval, full PUT replacement, DELETE with empty 204, and 404/422 handling.
+- Every accepted PUT advances updated_at, including identical replacements; created_at remains unchanged.
+- Added 18 database-backed regression cases in tests/test_appointment_details.py.
+- Checks actually run: Ruff passed; dedicated visitdock_test PostgreSQL suite: **76 passed**. Initial sandbox execution could not connect; approved rerun passed.
+- AI review: inspected full-field validation, immutable metadata, deletion persistence, and timestamp behavior. Human review remains pending.
+- Next: B05 search/filter/date semantics.

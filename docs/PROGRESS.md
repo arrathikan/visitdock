@@ -109,3 +109,12 @@
   - Search and query filtering (`search`, `status`, `doctor`, `date`) are not yet implemented (scheduled for B05).
 - **Next smallest feature:**
   - **B04 — Retrieve, Update, and Delete Appointments**: `GET /api/v1/appointments/{id}`, `PUT /api/v1/appointments/{id}`, `DELETE /api/v1/appointments/{id}` with 404 handling.
+
+### B04 — verified by Codex, 2026-10-13
+
+- Implemented UUID retrieval, full PUT replacement, DELETE with empty 204, and 404/422 handling.
+- Every accepted PUT advances updated_at, including identical replacements; created_at remains unchanged.
+- Added 18 database-backed regression cases in tests/test_appointment_details.py.
+- Checks actually run: Ruff passed; dedicated visitdock_test PostgreSQL suite: **76 passed**. Initial sandbox execution could not connect; approved rerun passed.
+- AI review: inspected full-field validation, immutable metadata, deletion persistence, and timestamp behavior. Human review remains pending.
+- Next: B05 search/filter/date semantics.

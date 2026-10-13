@@ -1,6 +1,9 @@
 """FastAPI router for appointment endpoints."""
 
-from fastapi import APIRouter, Depends, Query, status
+from datetime import UTC, datetime, timedelta
+from uuid import UUID
+
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
@@ -74,3 +77,48 @@ def list_appointments(
         page=page,
         page_size=page_size,
     )
+
+
+def find_appointment(db: Session, appointment_id: UUID) -> Appointment:
+    """Resolve a record or return the documented missing-record response."""
+    appointment = db.get(Appointment, appointment_id)
+    if appointment is None:
+        raise HTTPException(status_code=404, detail="Appointment not found")
+    return appointment
+
+
+@router.get("/{appointment_id}", response_model=AppointmentResponse)
+def get_appointment(appointment_id: UUID, db: Session = Depends(get_db)) -> Appointment:
+    return find_appointment(db, appointment_id)
+
+
+@router.put("/{appointment_id}", response_model=AppointmentResponse)
+def update_appointment(
+    appointment_id: UUID, payload: AppointmentCreate, db: Session = Depends(get_db)
+) -> Appointment:
+    appointment = find_appointment(db, appointment_id)
+    for field, value in payload.model_dump().items():
+        setattr(appointment, field, value)
+    # Every accepted replacement, including an identical PUT, advances the timestamp.
+    appointment.updated_at = max(
+        datetime.now(UTC), appointment.updated_at + timedelta(microseconds=1)
+    )
+    try:
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
+    db.refresh(appointment)
+    return appointment
+
+
+@router.delete("/{appointment_id}", status_code=204)
+def delete_appointment(appointment_id: UUID, db: Session = Depends(get_db)) -> Response:
+    appointment = find_appointment(db, appointment_id)
+    db.delete(appointment)
+    try:
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
+    return Response(status_code=204)
