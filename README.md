@@ -34,11 +34,11 @@ A small, usable web application that lets clinic staff **create, view, edit, del
 | Create/view/edit/delete appointments | Yes | No (Planned B03-B04) |
 | Search + filters | Yes | No (Planned B05) |
 | Validation and helpful errors | Yes | No (Planned B03-B06) |
-| PostgreSQL persistence + migrations | Yes | No (Planned B02) |
-| Automated API and browser tests | Yes | **Backend health tests implemented (B01)**; browser tests pending |
+| PostgreSQL persistence + migrations | Yes | **Implemented (B02)** |
+| Automated API and browser tests | Yes | **Backend health & PostgreSQL integration tests implemented (B02)**; browser tests pending |
 | Responsive VisitDock UI | Yes | No (Planned F01-F03) |
-| Local Docker PostgreSQL | Yes | **Starter config supplied** |
-| GitHub Actions CI | Yes | **Scaffold check + backend CI active** |
+| Local Docker PostgreSQL | Yes | **Verified & active on port 5433** |
+| GitHub Actions CI | Yes | **Scaffold check + backend CI active with PostgreSQL 17** |
 | Automatic production deployment | Optional | **Not configured** |
 
 ## Quick reference
@@ -61,10 +61,15 @@ visitdock/
 ├── CLAUDE.md                  # Claude Code adapter
 ├── START_HERE.md              # Step-by-step human launch guide
 ├── AI_USAGE.md                # Evidence-based AI work log
-├── backend/                   # FastAPI backend service (B01 foundation implemented)
-│   ├── app/                   # Application package (main.py, core)
-│   ├── tests/                 # Automated Pytest suite
-│   ├── pyproject.toml         # PEP 621 dependencies and configuration
+├── backend/                   # FastAPI backend service (B01-B02 implemented)
+│   ├── alembic/               # Database migrations (initial schema)
+│   ├── app/                   # Application package
+│   │   ├── appointments/      # Appointment models and domain logic
+│   │   ├── core/              # Settings & config
+│   │   └── db/                # Engine, DeclarativeBase, session dependency
+│   ├── tests/                 # Automated Pytest suite (health & DB integration)
+│   ├── alembic.ini            # Alembic configuration
+│   ├── pyproject.toml         # Dependencies and tool configurations
 │   └── README.md              # Backend-specific instructions
 ├── frontend/                  # Added only after backend completion
 ├── docs/                      # Product, API, UX, test, ops, CI/CD docs
@@ -87,33 +92,43 @@ docker compose ps
 docker compose down         # preserves Postgres volume
 ```
 
-### Backend development (verified in B01)
+### Backend development (verified in B01 & B02)
 
 From the repository root or `backend/` directory:
 
 ```bash
-# 1. Navigate to backend directory
+# 1. Start local PostgreSQL (runs on localhost:5433)
+docker compose up -d db
+
+# 2. Navigate to backend directory
 cd backend
 
-# 2. Create isolated virtual environment
+# 3. Create isolated virtual environment
 python3 -m venv .venv
 
-# 3. Activate virtual environment
+# 4. Activate virtual environment
 # macOS / Linux:
 source .venv/bin/activate
 # Windows PowerShell:
 # .venv\Scripts\Activate.ps1
 
-# 4. Install backend in editable mode with development dependencies
+# 5. Install backend in editable mode with development dependencies
 python -m pip install -e ".[dev]"
 
-# 5. Run linting
+# 6. Run database migrations
+alembic upgrade head
+
+# 7. Inspect migration status
+alembic current
+alembic history
+
+# 8. Run linting
 ruff check .
 
-# 6. Run automated tests
+# 9. Run automated tests (runs both health and PostgreSQL integration tests)
 python -m pytest -q
 
-# 7. Start local development server
+# 10. Start local development server
 uvicorn app.main:app --reload --port 8000
 ```
 
