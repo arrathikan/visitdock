@@ -80,14 +80,16 @@ def list_appointments(
         filters.append(Appointment.status == status.value)
     if date is not None:
         timezone = ZoneInfo(settings.CLINIC_TIMEZONE)
-        start = datetime.combine(date, time.min, tzinfo=timezone)
         try:
-            end = datetime.combine(date + timedelta(days=1), time.min, tzinfo=timezone)
+            start = datetime.combine(date, time.min, tzinfo=timezone).astimezone(UTC)
+            end = datetime.combine(
+                date + timedelta(days=1), time.min, tzinfo=timezone
+            ).astimezone(UTC)
         except OverflowError:
             raise HTTPException(status_code=422, detail="Date exceeds supported range") from None
         filters.extend([
-            Appointment.appointment_at >= start.astimezone(UTC),
-            Appointment.appointment_at < end.astimezone(UTC),
+            Appointment.appointment_at >= start,
+            Appointment.appointment_at < end,
         ])
     total = db.scalar(select(func.count()).select_from(Appointment).where(*filters)) or 0
     offset = (page - 1) * page_size

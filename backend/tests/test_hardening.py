@@ -44,3 +44,16 @@ def test_repr_omits_names():
 def test_invalid_timezone_rejected():
     with pytest.raises(ValueError, match="IANA"):
         Settings(CLINIC_TIMEZONE="Invalid/Zone")
+
+
+@pytest.mark.parametrize("value", [1792488600, 1792488600.5, "1792488600"])
+def test_numeric_datetime_rejected(client, value):
+    from tests.test_appointment_details import BASE, PAYLOAD
+    response = client.post(BASE, json={**PAYLOAD, "appointment_at": value})
+    assert response.status_code == 422
+
+
+def test_minimum_date_timezone_overflow_rejected(client, monkeypatch):
+    from app.core.config import settings
+    monkeypatch.setattr(settings, "CLINIC_TIMEZONE", "Asia/Colombo")
+    assert client.get("/api/v1/appointments?date=0001-01-01").status_code == 422

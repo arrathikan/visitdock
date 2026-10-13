@@ -30,6 +30,14 @@ class AppointmentCreate(BaseModel):
             raise ValueError("Field must not exceed 150 characters.")
         return trimmed
 
+    @field_validator("appointment_at", mode="before")
+    @classmethod
+    def validate_iso_datetime_string(cls, value: object) -> str:
+        """Reject epoch coercion: the API contract requires an ISO datetime string."""
+        if not isinstance(value, str) or "T" not in value.upper():
+            raise ValueError("Datetime must be an ISO 8601 string with time and timezone.")
+        return value
+
     @field_validator("appointment_at")
     @classmethod
     def validate_timezone_aware(cls, value: datetime) -> datetime:

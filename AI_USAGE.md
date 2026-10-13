@@ -168,3 +168,8 @@ Explain which decisions were human-made, how the candidate validated AI output, 
 - Actual checks: **4 browser tests passed** using installed Chrome; **8 frontend tests**, lint, typecheck and production build passed. Desktop/mobile screenshots visually inspected; no horizontal overflow.
 - Initial browser failures were test selectors (status label and Next live region), corrected with role/scoped selectors and condition-based waits. Cleanup now uses an independent context; removed only 2 identified session-created records from interrupted attempts.
 - Feature source formatted in a separate style commit for readability. Candidate human review pending. CI execution verification follows push.
+
+### R01 backend audit corrections — 2026-10-13
+- Reproduced numeric epoch coercion (3 cases returned 201 instead of contract 422) and year-0001 Colombo UTC conversion overflow. All 4 regressions failed before fixes.
+- Require ISO datetime strings; guard both UTC day-boundary conversions. Full isolated PostgreSQL suite now **103 passed**; Ruff passed.
+- Q01 CI confirmed success: https://github.com/arrathikan/visitdock/actions/runs/38351468077. Human review pending.
