@@ -151,3 +151,8 @@ Explain which decisions were human-made, how the candidate validated AI output, 
 - Actual checks: lint, typecheck, 1 rendered UI test, production webpack build passed. Fixed Next Link lint errors and test typing/configuration failures.
 - npm audit flagged a dev-only braces/micromatch dependency chain in Next ESLint; no unsafe forced downgrade applied. Final audit must record resolution or limitation.
 - Human review pending. Next: F02 mock workspace.
+
+### F02 — verified by Codex, 2026-10-13
+- Responsive editorial appointment rows, compact patient/doctor search and status/doctor filters, clear filters and no-results state with explicit fictional mock preview.
+- Actual lint/typecheck, 2 UI tests, and production build passed. AI design review against UI_DESIGN completed; browser/mobile verification follows Q01.
+- Next: F03 real API, dialogs and feedback. Human review pending.
