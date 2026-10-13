@@ -138,3 +138,9 @@ Explain which decisions were human-made, how the candidate validated AI output, 
 - Escaped SQL LIKE wildcards so search remains literal; validated IANA timezone configuration.
 - Actual checks: Ruff passed; **95 PostgreSQL-backed tests passed**, including 23/25-hour DST days and Colombo inclusive/exclusive boundaries.
 - AI review completed; candidate human review pending. Next: B06 audit/hardening.
+
+### B06 — backend quality gate, 2026-10-13
+- Audit before edits confirmed missing CORS middleware despite configured origins (browser integration failure), and unhandled DB failure behavior. ORM repr also included names unnecessarily.
+- Activated explicit CORS origins/methods, generic database 503 response, removed names from ORM repr; added regressions.
+- Actual checks: Ruff and scaffold passed; **99 PostgreSQL tests passed**; Alembic current and upgrade head on visitdock_test succeeded at 848b204929ed. No downgrade or development-data cleanup performed.
+- Backend gate passed. Human candidate review remains pending. Next: F01.

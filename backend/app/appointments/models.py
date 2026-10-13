@@ -84,7 +84,4 @@ class Appointment(Base):
     )
 
     def __repr__(self) -> str:
-        return (
-            f"<Appointment(id={self.id}, patient_name={self.patient_name!r}, "
-            f"doctor={self.doctor!r}, status={self.status!r})>"
-        )
+        return f"<Appointment(id={self.id}, status={self.status!r})>"
