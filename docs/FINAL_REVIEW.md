@@ -1,5 +1,7 @@
 # Final AI review — 2026-10-13
 
+> **Latest follow-up review:** See [TECHNICAL_REVIEW](TECHNICAL_REVIEW.md) for the 2026-10-13 re-verification and new long-name overflow, validation-description, test-stub and lint-maintenance findings. Standard automated checks pass; unconditional UX sign-off remains pending. The earlier assessment below is historical and does not override these findings. Candidate direction is documented; personal code review and test execution are unverified.
+
 ## Verdict
 
 Implementation and automated acceptance checks are complete for the agreed fictional-data internship scope. Human candidate code review, personal reflection and submission/visibility confirmation remain pending. No deployment was performed or authorized. This is an AI-led audit, not a fabricated independent human review.

@@ -35,3 +35,15 @@
 ## Candidate explanation drill
 
 Explain FastAPI vs Fastify, PostgreSQL choice, model and validation, routes/errors, date/time zone handling, filtering/query logic, migration flow, frontend API calls, tests, AI review/corrections, and remaining limitations.
+
+## Follow-up review status — 2026-10-13
+
+The earlier checked items describe standard flows and executed automated verification. They are not personal candidate attestations. See [TECHNICAL_REVIEW](TECHNICAL_REVIEW.md) for newly reproduced limits.
+
+- [ ] Correct accepted long-name overflow before claiming complete responsive input coverage.
+- [ ] Associate datetime inline errors with the input and verify the accessible description.
+- [ ] Remove or implement the uncollected isolation-test stub; verify a maintained compatible lint toolchain.
+- [x] Candidate direction, scope and verification requests documented from conversation evidence.
+- [x] Reflection draft and suggested technical answers prepared without invented hands-on involvement.
+- [ ] Candidate personally reviews source, performs the manual walkthrough/restart and records genuine learning.
+- [ ] Company submission/visibility rules confirmed by the candidate.

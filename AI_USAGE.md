@@ -1,193 +1,154 @@
-# AI Assistance, Review, and Corrections Log
+# AI-assisted development and review — VisitDock
 
-> This log contains historical agent reports for B01–B03 and actual Codex work/checks for B04–R01. Historical human-validation claims below were inherited and have not been independently confirmed; candidate review and personal reflection remain pending.
+## 1. Overview
 
-The take-home task explicitly allows AI, and evaluators want to understand **how AI suggestions were checked and corrected**. Record truthful, candidate-owned decisions. Do not fabricate a bug, a fix, a prompt, or a result.
+VisitDock is an internship demonstration for managing fictional clinic appointments. Its backend, frontend, tests and documentation were developed with AI assistance in small phases: B01–B06, F01–F03, Q01 and R01.
 
-## Tools used
+This summary separates three evidence levels:
 
-| Tool / model | Task performed | Date / slice | Validation status |
-| --- | --- | --- | --- |
-| Gemini 3.8 Flash (Medium) / Antigravity | B01 FastAPI backend foundation, tests, configuration, documentation | 2026-10-13 / B01 | Verified commands, tests, endpoints, and diffs |
-| Gemini 3.8 Flash (Medium) / Antigravity | B02 PostgreSQL persistence, Alembic migrations, DB integration tests | 2026-10-13 / B02 | Verified Docker Postgres, Alembic up/down, Pytest suite |
-| Gemini 3.8 Flash (Medium) / Antigravity | B03 Create & List Appointments API, test database isolation safeguards | 2026-10-13 / B03 | Verified test isolation, rollback fixture, endpoint responses, curl smoke tests |
-| Codex / current session | B04–B06, F01–F03, Q01 and R01 implementation, AI review and verification | 2026-10-13 | Actual automated checks and AI visual review; human review pending |
+- **Historical record:** earlier agent reports and committed diffs. A commit proves the code change, not who personally reviewed it.
+- **Current AI verification:** repository inspection and commands executed by Codex during this review on 2026-10-13, against application commit `bc94216`.
+- **Candidate verification:** personal review, learning and approval remain unconfirmed until the candidate records them in section 9.
 
-## Slices
+The original work log, including prompts, slice results and commit references, is preserved in [AI_USAGE_HISTORY](docs/AI_USAGE_HISTORY.md). [PROGRESS](docs/PROGRESS.md) remains the chronological handoff. This is an AI-led review; no independent human review is claimed.
 
-### B01 FastAPI backend foundation — 2026-10-13
+## 2. Tools and responsibilities
 
-- **Goal:** Establish minimal, maintainable FastAPI backend foundation with `GET /health`, PEP 621 packaging compatible with CI `pip install -e ".[dev]"`, Pytest automated tests, and Ruff linting.
-- **AI tool used:** Gemini 3.8 Flash (Medium) via Antigravity IDE
-- **Prompt / reference:** [`prompts/B01_BACKEND_FOUNDATION.md`](prompts/B01_BACKEND_FOUNDATION.md)
-- **AI suggestion/output:** Created `backend/pyproject.toml`, `backend/app/main.py`, `backend/app/core/__init__.py`, `backend/tests/test_health.py`, `backend/README.md`.
-- **What was checked:**
-  - Verified PEP 621 metadata compatibility with `pip install -e ".[dev]"`.
-  - Checked `ruff check .` output.
-  - Checked `python -m pytest -q` output.
-  - Inspected starlette deprecation warning regarding TestClient and added appropriate pytest warning filters.
-  - Tested live uvicorn server startup and curled `/health` and `/docs`.
-  - Validated markdown links with `scripts/check_scaffold.py`.
-- **Issue found:** During initial pytest execution, `StarletteDeprecationWarning` was surfaced during import of `TestClient` in Starlette 1.7.0. Added explicit filter in `pyproject.toml` so test runs are clean and predictable.
-- **Correction and reason:** Configured `filterwarnings` in `[tool.pytest.ini_options]` in `backend/pyproject.toml`.
-- **Commands actually run and outcome:**
-  - `python3 -m venv backend/.venv`: Exit code 0.
-  - `./.venv/bin/python -m pip install -e ".[dev]"`: Exit code 0.
-  - `./.venv/bin/ruff check .`: Exit code 0 (All checks passed).
-  - `./.venv/bin/python -m pytest -q`: Exit code 0 (5 passed).
-  - `curl http://localhost:8000/health`: HTTP 200 OK `{"status":"ok"}`.
-  - `curl http://localhost:8000/docs`: HTTP 200 OK Swagger UI.
-  - `python3 scripts/check_scaffold.py`: Exit code 0 (Starter checks passed).
-- **Candidate review & reflection:**
-  - _Candidate to review and record notes before final submission._
+| Tool | Responsibility | Evidence boundary |
+| --- | --- | --- |
+| Earlier log: Gemini 3.8 Flash / Antigravity | B01–B03 backend foundation, database and create/list API | Attribution inherited from the original log; model identity and candidate involvement were not independently verified. Code and corrections are available in Git history. |
+| Codex | B04–R01 implementation, regression testing, AI review and this documentation handoff | Current source, commit diffs and executed checks; candidate personal review remains pending. |
+| Pytest / HTTPX / PostgreSQL | Backend API, schema, persistence and isolation checks | Real PostgreSQL; no SQLite replacement. |
+| Vitest / Testing Library | Frontend request mapping, rendered states and form regressions | Mocked fetch and jsdom; not a substitute for real browser testing. |
+| Playwright | Desktop/mobile CRUD and error recovery | Real API/database for CRUD; request interception for failure-state testing. |
+| GitHub Actions | Repeatable checks on pushed commits | Inspect each job and actual test steps, not just a green scaffold badge. |
 
-### B02 PostgreSQL persistence & Alembic migrations — 2026-10-13
+## 3. Development workflow
 
-- **Goal:** Implement PostgreSQL 17 persistence foundation, SQLAlchemy 2.x DeclarativeBase and session dependency, Appointment ORM model, Alembic migrations, and automated integration tests.
-- **AI tool used:** Gemini 3.8 Flash (Medium) via Antigravity IDE
-- **Prompt / reference:** [`prompts/B02_DATABASE_MIGRATIONS.md`](prompts/B02_DATABASE_MIGRATIONS.md)
-- **AI suggestion/output:** Created `app/core/config.py`, `app/db/session.py`, `app/appointments/models.py`, Alembic migration environment and initial migration `848b204929ed_create_appointments_table.py`, Pytest fixtures in `tests/conftest.py`, and `tests/test_database.py`.
-- **What was checked:**
-  - Verified local Docker PostgreSQL 17 container on port 5433 with healthy status.
-  - Verified `alembic upgrade head`, `alembic current`, `alembic history`, and `alembic downgrade base`.
-  - Investigated blanket deprecation warning filter from B01; removed broad `ignore::DeprecationWarning` and narrowed to specific Starlette TestClient warning.
-  - Investigated GitHub Actions Node 20 runtime deprecation warnings and upgraded `actions/checkout@v6`, `actions/setup-python@v6`, `actions/setup-node@v6` in a separate `chore(ci)` commit.
-  - Verified Ruff linting and line-length compliance in generated Alembic migration file.
-  - Verified 13 automated tests (5 health + 8 PostgreSQL tests) passing in 0.21s.
-- **Issue found:** Autogenerated Alembic migration exceeded Ruff's 100-character line length limit and contained trailing whitespace.
-- **Correction and reason:** Formatted the migration file with multi-line column definitions and clean parameter layout.
-- **Commands actually run and outcome:**
-  - `docker compose up -d db`: Container started and healthy.
-  - `./.venv/bin/python -m pip install -e ".[dev]"`: Installed SQLAlchemy 2.1, Psycopg 3.3, Alembic 1.20, Pydantic-Settings 2.15.
-  - `./.venv/bin/alembic upgrade head`: Applied migration `848b204929ed`.
-  - `./.venv/bin/alembic current`: `848b204929ed (head)`.
-  - `./.venv/bin/alembic downgrade base && ./.venv/bin/alembic upgrade head`: Clean rollback and re-apply.
-  - `./.venv/bin/ruff check .`: All checks passed.
-  - `./.venv/bin/python -m pytest -v`: 13 passed in 0.21s.
-  - `python3 scripts/check_scaffold.py`: Passed (21 required files, 35 Markdown files).
-- **Candidate review & reflection:**
-  - _Candidate to review and record notes before final submission._
+Inspect Git state and requirements → implement one feature → execute relevant checks → inspect failures/diffs → correct genuine defects → update evidence → commit and normally push → verify CI.
 
-### B03 Create & List Appointments API and Test Database Isolation — 2026-10-13
+The repository uses a modular monolith: synchronous FastAPI/SQLAlchemy backend and a Next.js client workspace. Backend work preceded frontend integration. Feature boundaries and corrections remain visible in ordinary commits; no history rewrite or force push was used.
 
-- **Goal:** Correct potentially destructive database test isolation in `backend/tests/conftest.py`, implement Pydantic v2 schemas and REST endpoints for `POST /api/v1/appointments` and `GET /api/v1/appointments`, add automated tests, and ensure full test isolation without residual data.
-- **AI tool used:** Gemini 3.8 Flash (Medium) via Antigravity IDE
-- **Prompt / reference:** [`prompts/B03_CREATE_LIST.md`](prompts/B03_CREATE_LIST.md) and B03 user assignment prompt.
-- **AI suggestion/output:** Created `backend/app/appointments/schemas.py`, `backend/app/appointments/router.py`, registered router in `backend/app/main.py`, overhauled `backend/tests/conftest.py`, created `backend/tests/test_isolation_guard.py` and `backend/tests/test_appointments_api.py`.
-- **What was checked:**
-  - Reviewed test target safety guards: verified pytest rejects execution if `APP_ENV != "test"` or if database is not recognized as a dedicated test database (e.g. `visitdock`).
-  - Reviewed test session lifecycle: replaced destructive `cleanup_session.execute(delete(Appointment))` with transaction savepoint rollbacks (`join_transaction_mode="create_savepoint"`).
-  - Verified Pydantic validation: trimmed strings, rejection of whitespace-only names, max length 150 bounds, timezone awareness validation (rejecting naive datetimes), rejection of unexpected client fields (`extra="forbid"`), and enum validation.
-  - Verified UTC instant preservation: timestamps serialize consistently to ISO 8601 strings ending in `Z`.
-  - Verified deterministic list pagination: SQL-level `offset`/`limit`, accurate `total` count, sorting by `appointment_at ASC, id ASC`.
-  - Ran full test suite (58 tests passing).
-  - Started live Uvicorn dev server and verified `/health`, `/docs`, `/openapi.json`, and manual `POST` and `GET` requests via `curl`.
-  - Verified that manual smoke test data created in `visitdock` development database persisted across API restarts and was not purged by test runs.
-- **Issues found:**
-  1. *Priority Review Finding:* B02 `backend/tests/conftest.py` executed migrations on whatever database was configured in `DATABASE_URL` and ran an unconditional `delete(Appointment)` in teardown. Running tests without environment overrides would delete all development appointments in `visitdock`.
-  2. *Savepoint visibility in direct session instantiation:* During initial transaction savepoint implementation, `tests/test_database.py` imported `SessionLocal` into its module namespace at import time. Calling `with SessionLocal() as new_session:` created an unjoined second connection that could not see uncommitted savepoint rows.
-  3. *Unused imports:* Ruff flagged unused imports in test files (`app.db.session.engine` in `test_isolation_guard.py` and `datetime.timezone` in `test_appointments_api.py`).
-- **Corrections and reasons:**
-  1. Added `validate_test_database_target` to `conftest.py` requiring `APP_ENV=test` and an explicitly recognized test database name (e.g., `visitdock_test`). Switched session fixture to an outer transaction with savepoints that automatically rolls back, eliminating all residual test data and removing table-wide delete queries.
-  2. Monkeypatched `tests.test_database.SessionLocal` in addition to `app.db.session.SessionLocal` in the `db_session` fixture so any auxiliary test sessions share the same connection and savepoint scope.
-  3. Removed unused imports and formatted import blocks to pass `ruff check .` with zero warnings.
-- **Commands actually run and outcome:**
-  - `docker exec -i visitdock-db-1 psql -U visitdock -d postgres -c "CREATE DATABASE visitdock_test OWNER visitdock;"`: Exit code 0.
-  - `APP_ENV=test DATABASE_URL="postgresql+psycopg://visitdock:visitdock_dev_only@localhost:5433/visitdock_test" python -m pytest -v`: Exit code 0 (58 passed in 0.27s).
-  - `APP_ENV=development python -m pytest -q`: Exit code 1 (safely halted with `pytest.UsageError: Unsafe test environment`).
-  - `APP_ENV=test DATABASE_URL="postgresql+psycopg://visitdock:visitdock_dev_only@localhost:5433/visitdock" python -m pytest -q`: Exit code 1 (safely halted with `pytest.UsageError: Unsafe target database 'visitdock'`).
-  - `ruff check .`: Exit code 0 (All checks passed).
-  - `python3 scripts/check_scaffold.py`: Exit code 0 (Starter checks passed).
-  - `uvicorn app.main:app --port 8000`:
-    - `curl -X POST http://localhost:8000/api/v1/appointments`: HTTP 201 Created.
-    - `curl http://localhost:8000/api/v1/appointments?page=1&page_size=20`: HTTP 200 OK.
-    - `curl` with invalid payload: HTTP 422 Unprocessable Content.
-    - `curl` with page_size=101: HTTP 422 Unprocessable Content.
-  - `docker exec visitdock-db-1 psql -U visitdock -d visitdock -c "SELECT ..."`: Confirmed development appointment record was preserved.
-- **Candidate review & reflection:**
-  - _Candidate to review and record notes before final submission._
+| Work | Commit |
+| --- | --- |
+| Safe test database isolation | `e6cf47a` |
+| Create/list API | `1c1f057` |
+| Retrieve/update/delete | `bdd831c` |
+| Search, filters and clinic dates | `11239c7` |
+| CORS and safe database failures | `bdd6bd0` |
+| Frontend foundation / mock workspace / live integration | `54fbe99` / `288b69d` / `7cd20b8` |
+| Source formatting | `8bb8e91` |
+| Real browser CI | `5ccc8c4` |
+| ISO validation and date boundaries | `c788ced` |
+| Edit timestamp precision | `dcb268a` |
+| Pinned backend dependencies | `7354eb0` |
+| Final implementation documentation / CI checkpoint | `9ffebce` / `bc94216` |
 
-## Entry template — copy this section for each meaningful slice
+## 4. AI-generated code review methodology
 
-### [Slice ID] [Short title] — [date]
+Compare requirements with routes, schemas, queries, migrations, UI and tests. Read the original and corrected Git versions for each claimed defect. Run the existing regression suite and inspect what the test actually proves. Check malformed inputs, timezones, missing records, database rollback, browser integration, feedback, keyboard behavior and responsive boundaries.
 
-- **Goal:**
-- **AI tool used:**
-- **Prompt / reference:** Link to `prompts/...` or summarize any ad hoc question.
-- **AI suggestion/output:**
-- **What I manually checked:** Files, edge cases, review method.
-- **Issue I found:** Specific flaw **if one was actually found**; otherwise write “none found in this review.”
-- **Correction and reason:** Include links to commit/diff if possible.
-- **Commands actually run and outcome:**
-- **What I learned / would improve:**
+This review reran the entire automated suite and added temporary, uncommitted browser experiments for accepted 150-character names and datetime error descriptions. Those experiments revealed gaps that the normal passing suite does not cover. Their evidence and proposed follow-ups are in [TECHNICAL_REVIEW](docs/TECHNICAL_REVIEW.md). Application code was not changed in this documentation review.
 
-## Final reflection — complete before submission
+## 5. Identified defects and corrections
 
-Explain which decisions were human-made, how the candidate validated AI output, what genuine defects were fixed, and what limitations remain. Avoid vague claims such as “AI built everything perfectly.”
+### A. Test database safety — corrected in e6cf47a
 
-### B04 — verified by Codex, 2026-10-13
+**Historical risk/root cause:** the pre-fix fixture used configured `DATABASE_URL`, ran migrations without validating the target and executed `delete(Appointment)` without a WHERE clause after tests. If pointed at development, cleanup could delete unrelated records. This was confirmed by inspecting `git show e6cf47a^:backend/tests/conftest.py`; the dangerous version was not executed.
 
-- Implemented UUID retrieval, full PUT replacement, DELETE with empty 204, and 404/422 handling.
-- Every accepted PUT advances updated_at, including identical replacements; created_at remains unchanged.
-- Added 18 database-backed regression cases in tests/test_appointment_details.py.
-- Checks actually run: Ruff passed; dedicated visitdock_test PostgreSQL suite: **76 passed**. Initial sandbox execution could not connect; approved rerun passed.
-- AI review: inspected full-field validation, immutable metadata, deletion persistence, and timestamp behavior. Human review remains pending.
-- Next: B05 search/filter/date semantics.
+**Current correction:** [conftest.py](backend/tests/conftest.py) checks `APP_ENV=test` and a recognized test database name before migrations. Tests use an outer transaction with savepoints; API commits stay inside that transaction and teardown rolls it back. There is no table-wide delete. Auxiliary sessions share the test connection.
 
-### B05 — verified by Codex, 2026-10-13
-- Added case-insensitive patient/doctor search, exact doctor and status filters, clinic-date filtering and bounded SQL pagination.
-- Escaped SQL LIKE wildcards so search remains literal; validated IANA timezone configuration.
-- Actual checks: Ruff passed; **95 PostgreSQL-backed tests passed**, including 23/25-hour DST days and Colombo inclusive/exclusive boundaries.
-- AI review completed; candidate human review pending. Next: B06 audit/hardening.
+**Tests/outcome:** [test_isolation_guard.py](backend/tests/test_isolation_guard.py) verifies unsafe environment/database rejection and rollback. The full suite passed. Two additional CLI probes intentionally exited 1 with `pytest.UsageError` for development environment and a `visitdock` database target, before migration or connection use. Database-name checks are a practical safeguard, not a replacement for correctly provisioned isolated databases.
 
-### B06 — backend quality gate, 2026-10-13
-- Audit before edits confirmed missing CORS middleware despite configured origins (browser integration failure), and unhandled DB failure behavior. ORM repr also included names unnecessarily.
-- Activated explicit CORS origins/methods, generic database 503 response, removed names from ORM repr; added regressions.
-- Actual checks: Ruff and scaffold passed; **99 PostgreSQL tests passed**; Alembic current and upgrade head on visitdock_test succeeded at 848b204929ed. No downgrade or development-data cleanup performed.
-- Backend gate passed. Human candidate review remains pending. Next: F01.
+### B. Edit datetime precision — corrected in dcb268a
 
-### F01 — verified by Codex, 2026-10-13
-- Next.js 16.4 App Router, React, TypeScript and Tailwind visual shell with warm canvas, forest actions, compact top navigation and skip link.
-- Pinned frontend dependencies and npm lockfile. Node >=24.15 required; verified with bundled Node 24.19 (system Node 22.15 was too old for latest jsdom).
-- Actual checks: lint, typecheck, 1 rendered UI test, production webpack build passed. Fixed Next Link lint errors and test typing/configuration failures.
-- npm audit flagged a dev-only braces/micromatch dependency chain in Next ESLint; no unsafe forced downgrade applied. Final audit must record resolution or limitation.
-- Human review pending. Next: F02 mock workspace.
+**Historical failure:** minute-only input converted `09:30:42.123Z` to `09:30:00.000Z` while changing only doctor. The prior conversion and added regression are visible in the commit diff; earlier failure output remains in the history log.
 
-### F02 — verified by Codex, 2026-10-13
-- Responsive editorial appointment rows, compact patient/doctor search and status/doctor filters, clear filters and no-results state with explicit fictional mock preview.
-- Actual lint/typecheck, 2 UI tests, and production build passed. AI design review against UI_DESIGN completed; browser/mobile verification follows Q01.
-- Next: F03 real API, dialogs and feedback. Human review pending.
+**Current correction:** [utcInstant](frontend/lib/api.ts) returns the original timestamp when the entered minute value equals the original minute value. A changed time is converted explicitly to UTC. [AppointmentForm](frontend/components/appointment-form.tsx) passes the original instant.
 
-### F03 — implementation verified by Codex, 2026-10-13
-- Replaced mock records with live list/detail/create/PUT/DELETE requests, debounced search and combined filters, pagination, loading/empty/error/retry/success states.
-- Native modal drawer and delete confirmation provide focus containment, Escape and focus restoration. UTC form entry is explicit; list/date filters use configured clinic timezone.
-- Actual lint/typecheck, **8 UI/API unit tests**, and production build passed. A regression exposed field error text changing accessible labels; stable input labels fixed it.
-- Real API server against visitdock_test and production frontend started. Browser happy-path verification is the next Q01 gate; not yet claimed passed. Human review pending.
+**Test/outcome:** the form regression “preserves timestamp precision when editing other fields” in [appointment-form.test.tsx](frontend/components/appointment-form.test.tsx) passed in this review and asserts the exact outgoing timestamp. This test uses mocked fetch; real CRUD is separately covered by Playwright.
 
-### Q01 — local verification, 2026-10-13
-- Added Playwright desktop/mobile real PostgreSQL CRUD and API error/retry checks; real CI PostgreSQL/API/frontend startup and browser execution. See [browser instructions](docs/BROWSER_TESTING.md) for commands (from PROGRESS use BROWSER_TESTING.md).
-- Actual checks: **4 browser tests passed** using installed Chrome; **8 frontend tests**, lint, typecheck and production build passed. Desktop/mobile screenshots visually inspected; no horizontal overflow.
-- Initial browser failures were test selectors (status label and Next live region), corrected with role/scoped selectors and condition-based waits. Cleanup now uses an independent context; removed only 2 identified session-created records from interrupted attempts.
-- Feature source formatted in a separate style commit for readability. Candidate human review pending. CI execution verification follows push.
+### C. Numeric datetime coercion — corrected in c788ced
 
-### R01 backend audit corrections — 2026-10-13
-- Reproduced numeric epoch coercion (3 cases returned 201 instead of contract 422) and year-0001 Colombo UTC conversion overflow. All 4 regressions failed before fixes.
-- Require ISO datetime strings; guard both UTC day-boundary conversions. Full isolated PostgreSQL suite now **103 passed**; Ruff passed.
-- Q01 CI confirmed success: https://github.com/arrathikan/visitdock/actions/runs/38351468077. Human review pending.
+**Historical failure/root cause:** Pydantic datetime parsing accepted numeric and numeric-string epochs although the API contract requires an ISO datetime string. The earlier review recorded three responses of 201 instead of 422.
 
-### R01 frontend precision correction — 2026-10-13
-- Reproduced doctor-only edit changing appointment_at from 09:30:42.123 to 09:30:00.000. The regression failed before the fix.
-- Preserve the original instant when the minute-level time input is unchanged; conversion is inside form error handling.
-- Actual frontend lint/typecheck, **9 tests**, and production build passed. E2E source formatted for review. Human review pending.
+**Current correction:** [schemas.py](backend/app/appointments/schemas.py) validates string/time syntax before Pydantic parsing, then rejects missing offsets. [test_hardening.py](backend/tests/test_hardening.py) verifies integer, float and numeric-string values return 422. All three regressions passed now. The same commit guards extreme clinic-date UTC conversion; its regression also passed.
 
-### R01 final documentation and handoff — 2026-10-13
-- AI audit compared implementation to product/API/UX/security/test requirements before fixes; recorded reproduced failures and separate correction commits. See FINAL_REVIEW.md (under docs).
-- Current verified checks: fresh locked Python 3.13 environment pip check + Ruff + **103 PostgreSQL tests**; frontend lint/types/**9 unit tests**/production build; **4 desktop/mobile browser tests**, with screenshots reviewed.
-- Production npm audit: **0 vulnerabilities**. One development-tool advisory produces 5 high dependency-chain entries; disclosed in final review. No forced major downgrade.
-- Rewrote current-state/setup/API/CI docs, retained historical reports and explicitly distinguished inherited human-validation claims from this AI session.
-- Implementation complete for agreed scope; candidate personal review/reflection, company submission rules and manual restart walkthrough remain candidate-owned. No cross-mode memory sync claimed. Durable handoff is in these documents.
-- Commits: B04 bdd831c; B05 11239c7; B06 bdd6bd0; F01 54fbe99; F02 288b69d; F03 7cd20b8; format 8bb8e91; Q01 5ccc8c4; backend audit c788ced; frontend audit dcb268a; reproducible backend 7354eb0. All pushed normally to main.
+### D. Browser CORS and database responses — corrected in bdd6bd0
 
-### Final CI evidence
-- Final code/build commit 7354eb0: GitHub run 38352870395 completed successfully. Audit fixes dcb268a: run 38352465799 completed successfully. Q01 run 38351468077 confirmed actual browser step success, not just scaffold checks.
-- Final documentation is a separate commit; candidate personal reflection remains unfilled.
+**Historical findings:** CORS settings existed but middleware was absent; database failures had no documented safe response. These are visible in the before/after diff. This review does not claim every historical 500 necessarily exposed credentials.
+
+**Current correction:** [main.py](backend/app/main.py) activates explicit origin/method/header allowlists and returns generic 503 JSON for SQLAlchemy errors. Request sessions roll back and close on failure. ORM repr no longer includes names.
+
+**Tests/outcome:** hardening tests passed for allowed preflight, rejected origin, redacted database error and name-free repr. The error regression injects an OperationalError; it does not stop a real database or test every failure mode. Browser CRUD also passed through the actual CORS path. CORS is not authentication.
+
+### New review findings — open, not described as fixed
+
+Accepted long unbroken names cause horizontal overflow; datetime inline errors are not linked through aria-describedby; the isolation test module contains an uncollected empty stub. The installed ESLint 9 line is end-of-life according to [ESLint's support page](https://eslint.org/version-support/). See the prioritized evidence in [TECHNICAL_REVIEW](docs/TECHNICAL_REVIEW.md). Candidate UX sign-off remains conditional on follow-up.
+
+## 6. Regression testing evidence
+
+Commands below were executed during this review; earlier results are preserved separately.
+
+| Verification | Actual result |
+| --- | --- |
+| Backend `.venv/bin/python -m pip check` | No broken requirements found |
+| `.venv/bin/ruff check .` | All checks passed |
+| `APP_ENV=test DATABASE_URL=.../visitdock_test .venv/bin/python -m pytest -q --tb=short` | **103 passed in 1.96s** |
+| `alembic current` on isolated database | `848b204929ed (head)` |
+| `alembic check` | No new upgrade operations detected |
+| `npm ci` under Node 24.19 | Clean locked install succeeded; audit/deprecation findings reported below |
+| `npm run lint` / `npm run typecheck` | Passed |
+| `npm run test` | **9 passed** in four files |
+| `npm run build` | Production webpack build passed |
+| `PLAYWRIGHT_CHANNEL=chrome npm run test:e2e` | **4 passed in 21.3s**, real PostgreSQL CRUD on desktop/mobile |
+| Full npm audit / production-only audit | **5 high dependency-chain entries / 0 vulnerabilities** |
+
+GitHub run [38353180884](https://github.com/arrathikan/visitdock/actions/runs/38353180884), for `bc94216`, was independently retrieved: all four jobs succeeded, including the actual real PostgreSQL browser step. That evidence predates this documentation commit; its new run is reported after push. [Browser setup](docs/BROWSER_TESTING.md) documents the exact isolated service commands.
+
+## 7. Architecture and implementation decisions
+
+Repository decisions, not unconfirmed candidate personal choices:
+
+- FastAPI/Pydantic handle HTTP validation; SQLAlchemy parameterized statements handle persistence. PostgreSQL TIMESTAMPTZ preserves instants; Alembic versions the schema.
+- Search is a literal case-insensitive patient-or-doctor match. Optional exact doctor/status/date filters combine with AND. SQL count/offset/limit and appointment-time/UUID ordering provide bounded pagination.
+- Clinic midnight boundaries are converted to UTC, including 23/25-hour DST days. Form entry explicitly uses UTC; frontend/public and backend clinic settings must match.
+- A client workspace and typed fetch helper avoid an unnecessary state framework. Native dialogs support modal focus and Escape; request cancellation limits stale search responses.
+- No authentication, booking conflicts, payments or deployment were required. Tests use fictional records only. Lockfiles/snapshots record tested dependencies.
+
+## 8. Limitations
+
+Passing tests cover the specified scenarios, not all input or accessibility cases. The new long-name and error-description findings remain open. No real-device iOS/Safari, screen-reader certification or formal WCAG audit was performed. No manual server-restart walkthrough was executed in this review.
+
+Full npm audit still reports five high entries in the development-only Next ESLint → fast-glob → micromatch → braces chain. The [braces advisory](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) concerns deeply nested-pattern denial of service and lists no patched version. Production-only npm audit reported zero; this is not a comprehensive security certification. A maintained, compatible lint-tool upgrade needs separate verification. No forced major downgrade was used.
+
+This review checked Python dependency consistency, not a Python CVE scanner. The application has no authentication and must not handle sensitive patient data. Concurrent edits are last-write-wins. Earlier B01–B03 tool/model and human-validation claims remain inherited, not personally attested.
+
+## 9. Candidate Review — Confirmed Involvement and Verification Status
+
+This completed account uses the candidate's instructions in this conversation as evidence of participation. It does not infer personal code inspection or test execution from ownership of the repository or Git author metadata.
+
+### Candidate account
+
+I used AI assistance to continue the existing VisitDock repository and complete its planned implementation phases. I directed the order of work: finish the backend first, then build the frontend, integrate the real API, add browser tests and prepare the final documentation.
+
+I required the work to use fictional patient data, preserve unrelated changes and databases, avoid force pushes and history rewrites, and leave deployment outside the approved scope. I asked for feature-sized commits and normal pushes to GitHub.
+
+I requested real automated verification, GitHub Actions evidence, review of earlier AI-generated corrections and a candidate-friendly handoff. I also requested an organized AI usage log and reflection draft. The AI implemented and reviewed the code and executed the technical checks recorded in this document. These results are attributed to the AI workflow.
+
+The review records corrections for unsafe test cleanup, datetime precision loss, numeric datetime coercion and browser/database error handling. It also records open UX and dependency findings. The documentation preserves those AI findings and results with their verification limits.
+
+### Verification status
+
+| Activity | Status supported by the conversation |
+| --- | --- |
+| Directed continuation, work order and scope | Confirmed by candidate requests |
+| Required fictional data, database preservation and safe Git operations | Confirmed by candidate requests |
+| Requested feature commits, pushes, tests, CI and final review | Confirmed by candidate requests |
+| Requested documentation and reflection preparation | Confirmed by candidate requests |
+| Personally inspected source files or ran the checks | Not established by this record |
+| Personally reproduced the manual CRUD/restart walkthrough | Not established by this record |
+| Demonstrated understanding of the architecture or corrections | Suggested answers provided in the guide; personal understanding not assessed |
+| Confirmed company submission/visibility rules | Not established by this record |
+
+The narrative of confirmed involvement is complete. Personal technical sign-off remains unverified and must not be represented as completed. The [candidate review guide](docs/CANDIDATE_REVIEW_GUIDE.md) provides a practical walkthrough and self-study answers; the [reflection draft](docs/CANDIDATE_REFLECTION_DRAFT.md) uses the same evidence boundaries.

@@ -1,5 +1,7 @@
 # Implementation progress / handoff checkpoint
 
+**Latest follow-up review, 2026-10-13:** Documentation and candidate narrative are prepared with confirmed participation only. Standard checks rerun: 103 backend tests, 9 frontend tests, 4 real browser tests; dependency checks/lint/types/build/Alembic comparison passed. Additional UX and maintenance findings remain open in [TECHNICAL_REVIEW](TECHNICAL_REVIEW.md). No personal technical sign-off has been inferred.
+
 **Latest state, 2026-10-13:** Backend B01–B06, frontend F01–F03 and Q01 browser CI implemented. R01 audit corrections verified locally: **103 backend tests, 9 frontend tests**, production build/lint/types and real desktop/mobile browser workflow. Q01 and final implementation CI passed; evidence follows below. No deployment performed. Historical checkpoints below describe their state at that time.
 
 ## Verified in starter pack
@@ -179,3 +181,12 @@
 - R01 documentation committed separately as **9ffebce**; all implementation feature slices are committed and pushed normally. The subsequent documentation-only CI result is reported in the conversation.
 - Working checkout is under this Codex project at `visitdock/`; the original Desktop checkout was preserved unchanged. Remote main contains the work.
 - Remaining tasks belong to the human candidate: personal review/reflection and company submission/visibility confirmation. No implementation slices remain.
+
+### Follow-up technical review and candidate handoff
+
+- Reviewed clean application head bc94216 and actual Git diffs for corrections e6cf47a, dcb268a, c788ced and bdd6bd0. Independently confirmed CI run 38353180884 and all four job results.
+- Actually reran Python dependency consistency, Ruff, 103 PostgreSQL tests, Alembic current/schema comparison, clean npm ci, ESLint, types, 9 Vitest tests, production build and 4 Playwright tests. See [technical review](TECHNICAL_REVIEW.md) for outcomes and limits.
+- Additional temporary browser experiments reproduced 150-character name overflow and missing datetime error description. They are open findings, not passing committed regressions. An uncollected isolation-test stub and unsupported ESLint line are also documented. Application source unchanged in this review.
+- Reorganized AI_USAGE into nine sections; preserved historical prompts/results/commit references in [AI_USAGE_HISTORY](AI_USAGE_HISTORY.md) with explicit provenance.
+- Completed [candidate guide](CANDIDATE_REVIEW_GUIDE.md) and [reflection draft](CANDIDATE_REFLECTION_DRAFT.md). First-person statements describe direction/scope/verification requests confirmed in this conversation. Personal source inspection, test execution, learning, manual restart and submission confirmation remain unverified. No human review was fabricated.
+- Only relevant documentation is staged for the normal commit/push; no deployment or history rewrite. The new documentation-only CI run is reported in the conversation after push.
