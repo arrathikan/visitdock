@@ -1,8 +1,10 @@
 # Implementation progress / handoff checkpoint
 
-**Latest follow-up review, 2026-10-13:** Documentation and candidate narrative are prepared with confirmed participation only. Standard checks rerun: 103 backend tests, 9 frontend tests, 4 real browser tests; dependency checks/lint/types/build/Alembic comparison passed. Additional UX and maintenance findings remain open in [TECHNICAL_REVIEW](TECHNICAL_REVIEW.md). No personal technical sign-off has been inferred.
+**Current fixes checkpoint, 2026-10-13:** Four candidate-requested findings corrected in separate commits: 106 backend tests, 12 frontend tests and six desktop/mobile browser cases passed; lint/types/build and seven active lint-rule groups verified with ESLint 10.12. Upstream dev audit/peer metadata warnings remain disclosed. Candidate direction is confirmed; personal hands-on coding/testing is not inferred.
 
-**Latest state, 2026-10-13:** Backend B01–B06, frontend F01–F03 and Q01 browser CI implemented. R01 audit corrections verified locally: **103 backend tests, 9 frontend tests**, production build/lint/types and real desktop/mobile browser workflow. Q01 and final implementation CI passed; evidence follows below. No deployment performed. Historical checkpoints below describe their state at that time.
+**Earlier review at bc94216 (historical), 2026-10-13:** Documentation and candidate narrative are prepared with confirmed participation only. Standard checks rerun: 103 backend tests, 9 frontend tests, 4 real browser tests; dependency checks/lint/types/build/Alembic comparison passed. Additional UX and maintenance findings remain open in [TECHNICAL_REVIEW](TECHNICAL_REVIEW.md). No personal technical sign-off has been inferred.
+
+**Earlier implementation checkpoint (historical), 2026-10-13:** Backend B01–B06, frontend F01–F03 and Q01 browser CI implemented. R01 audit corrections verified locally: **103 backend tests, 9 frontend tests**, production build/lint/types and real desktop/mobile browser workflow. Q01 and final implementation CI passed; evidence follows below. No deployment performed. Historical checkpoints below describe their state at that time.
 
 ## Verified in starter pack
 
@@ -190,3 +192,15 @@
 - Reorganized AI_USAGE into nine sections; preserved historical prompts/results/commit references in [AI_USAGE_HISTORY](AI_USAGE_HISTORY.md) with explicit provenance.
 - Completed [candidate guide](CANDIDATE_REVIEW_GUIDE.md) and [reflection draft](CANDIDATE_REFLECTION_DRAFT.md). First-person statements describe direction/scope/verification requests confirmed in this conversation. Personal source inspection, test execution, learning, manual restart and submission confirmation remain unverified. No human review was fabricated.
 - Only relevant documentation is staged for the normal commit/push; no deployment or history rewrite. The new documentation-only CI run is reported in the conversation after push.
+
+### Candidate-directed follow-up fixes — verified
+
+- Selected findings were supplied by the candidate. Implementation/checks were AI-assisted; reflection and AI_USAGE describe confirmed direction in first person without fabricated manual review.
+- Backend 6bf6d99: collected parametrized development/production/staging/empty environment rejection. Ruff/pip check passed; 106 tests passed in 0.65s in the new empty visitdock_fixes_b437806_test database.
+- Form 9f6ef39: datetime describes help plus error; type/status have equivalent validation semantics. Three added cases failed before the fix and now pass; 12 unit tests.
+- Lint 27baa2a: exact ESLint 10.12 upgrade with official Next config 16.4. Normal npm ci/lint/types/unit/build pass; intentional bad code triggers TypeScript, Next, React, hooks, accessibility and import rules. Strict peer mode initially rejected stale plugin metadata; no force/legacy-peer/overrides or suppressed rules. Known five high dev-chain entries persist; production audit: 0.
+- Layout f9e04cf: patient/doctor and confirmation wrapping preserves complete 150-character values and readable dates. Regression compares against configured viewport, not expandable mobile innerWidth. Latest rebuilt workspace run: six Playwright cases passed in 11.8s; desktop/mobile screenshots visually checked.
+- Preserved an existing shared-test-database record when initial whole-suite empty checks failed (9 failed / 97 passed). Preserved unrelated Desktop IPv6 app/API processes when localhost selected their older build; tested this checkout with explicit IPv4 build/CORS/browser/API URLs. Added optional E2E_BASE_URL for repeatable local selection; CI defaults unchanged.
+- Updated README, test/setup/CI/security notes, technical/final reviews, AI_USAGE, reflection, candidate guide and submission checklist. Historical evidence is retained. Four code commits pushed normally; documentation/CI checkpoint follows. No deployment or destructive cleanup.
+
+- Four-fix code checkpoint f9e04cf passed GitHub CI [run 38358224046](https://github.com/arrathikan/visitdock/actions/runs/38358224046), including actual backend/frontend checks and the real browser step. The subsequent documentation-only head is verified in the conversation.

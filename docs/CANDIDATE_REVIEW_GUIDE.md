@@ -72,15 +72,20 @@ This is a plan to execute, not a claim of a completed candidate walkthrough. Fol
 
 Write the date, actual commands/actions, expected versus observed results, and any failures in the personal reflection only after executing them. Do not use another person's or an agent's result as your own.
 
-## Findings to review before sign-off
+## Follow-up corrections to understand
 
-At application commit bc94216, the AI review reproduced horizontal overflow for accepted 150-character unbroken patient/doctor names: a 1280px viewport had document width 3203px; a 390px viewport had width 1492px. It also reproduced a datetime inline error whose ID was missing from the field's aria-describedby. Code inspection found an uncollected pass-only isolation-test stub and an unsupported ESLint 9 dependency line. These are open findings, not completed fixes. The development-only braces advisory also remains documented.
+The candidate selected the four review findings and requested corrections. The AI implemented and verified the changes:
 
-Use [TECHNICAL_REVIEW](TECHNICAL_REVIEW.md) for exact reproductions, severity and limits. Recheck the submitted commit if application code or dependencies change. No screen-reader or real-device Safari verification is claimed.
+- f9e04cf wraps accepted 150-character patient/doctor strings and confirmation text. The desktop/mobile regression checks full content and bounds against the configured viewport; it avoids innerWidth expansion hiding overflow.
+- 9f6ef39 associates datetime errors with UTC help and links type/status errors. Unit tests assert the accessible description and retain entered values.
+- 6bf6d99 collects development, production, staging and empty-string rejection cases; the pass-only stub is gone.
+- 27baa2a pins ESLint 10.12 with the official Next configuration. Lint/types/12 unit tests/build and intentional invalid-code probes passed. Next documents that included plugins may warn about outdated peer ranges. No force or rule suppression was used.
+
+The full isolated backend suite has 106 tests; the browser suite has six cases. The separate five-entry development audit chain remains tracked, with zero production-only audit findings. Read [TECHNICAL_REVIEW](TECHNICAL_REVIEW.md) for original reproductions, current corrections and limits. No screen-reader or real-device Safari verification is claimed. These automated corrections are not evidence of personal candidate test execution.
 
 ## Verify CI for the commit being submitted
 
-The historical verified checkpoint is commit bc94216b07912ef2ad5bc68e1f539b4350fa0c5b and [run 38353180884](https://github.com/arrathikan/visitdock/actions/runs/38353180884). Its four jobs succeeded, including the real PostgreSQL browser step. A later documentation commit needs its own matching run; the older green run does not attest to a newer commit.
+The current verified code checkpoint is f9e04cf and [run 38358224046](https://github.com/arrathikan/visitdock/actions/runs/38358224046). The historical checkpoint was bc94216b07912ef2ad5bc68e1f539b4350fa0c5b and [run 38353180884](https://github.com/arrathikan/visitdock/actions/runs/38353180884). Its four jobs succeeded, including the real PostgreSQL browser step. A later documentation commit needs its own matching run; the older green run does not attest to a newer commit.
 
 1. Read the current commit with git rev-parse HEAD and confirm the normal push placed it on the intended remote branch.
 2. Open [GitHub Actions](https://github.com/arrathikan/visitdock/actions). Select the run whose head commit exactly matches the submitted commit, not just the most recently displayed green badge.
@@ -97,7 +102,7 @@ Leave an item unchecked until it reflects your actual involvement.
 - [ ] I personally read the files/commits I identify in my reflection and understand the three corrections above.
 - [ ] I executed the fictional CRUD/restart walkthrough and recorded its real results or explicit limitations.
 - [ ] I can explain what each automated test layer covers and what it does not cover.
-- [ ] I reviewed the open UX, accessibility and dependency findings and recorded a real resolution or acceptance decision.
+- [ ] I understand the four verified corrections and reviewed the remaining upstream dependency warning and verification limits.
 - [ ] I checked the GitHub CI run that matches the exact submitted commit.
 - [ ] My [AI_USAGE](../AI_USAGE.md) and [reflection draft](CANDIDATE_REFLECTION_DRAFT.md) distinguish my actual direction/review from AI implementation and verification.
 - [ ] I confirmed the company's repository visibility/submission instructions and approved the final wording.

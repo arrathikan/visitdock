@@ -65,7 +65,7 @@ uvicorn app.main:app --reload --port 8000
 - `PUT /api/v1/appointments/{id}` — Full replacement with create validation; every accepted replacement advances updated_at, even identical values.
 - `DELETE /api/v1/appointments/{id}` — Empty 204 or 404.
 
-Settings validate IANA clinic timezones. Date windows use midnight in CLINIC_TIMEZONE converted to UTC (including DST); unsupported boundary dates return 422. Datetimes must be offset-aware ISO strings, never numeric epochs. DB errors return generic 503; CORS allows explicit configured origins. Fictional records only. The full suite contains 103 tests.
+Settings validate IANA clinic timezones. Date windows use midnight in CLINIC_TIMEZONE converted to UTC (including DST); unsupported boundary dates return 422. Datetimes must be offset-aware ISO strings, never numeric epochs. DB errors return generic 503; CORS allows explicit configured origins. Fictional records only. The full suite contains 106 tests, including collected rejection cases for development, production, staging and empty environment strings.
 
 ## Tests and Linting
 

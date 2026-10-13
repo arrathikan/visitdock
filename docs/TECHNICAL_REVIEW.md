@@ -1,12 +1,32 @@
 # VisitDock technical review and verification
 
+## Current correction checkpoint — 2026-10-13
+
+The candidate selected the four findings below and requested fixes. The AI workflow implemented and verified them; no personal coding/test-execution claim is inferred. All four requested corrections now have verified evidence. The separate upstream development dependency advisory and plugin metadata warnings remain disclosed.
+
+| Requested correction | Change | Verification | Commit |
+| --- | --- | --- | --- |
+| Long accepted names | Selective anywhere wrapping in patient/doctor cells and confirmation text; date/time remains readable | Full 150-character strings, cell/page bounds and confirmation width checked on desktop/mobile; no tolerance or clipping workaround | f9e04cf |
+| Datetime accessibility | Conditional error ID plus UTC help in aria-describedby; equivalent type/status semantics | Three new unit cases assert accessible descriptions, invalid state and retained inputs | 9f6ef39 |
+| Empty test stub | Four collected unsafe-environment parameter cases replace the stub/duplicated manual calls | 15 guard tests; full **106 backend tests passed** | 6bf6d99 |
+| ESLint maintenance | Pin supported ESLint 10.12.0; preserve official Next 16.4 configuration | Clean npm ci, lint, types, **12 unit tests**, build; seven critical rule groups reject intentional violations | 27baa2a |
+
+Final browser run against explicit workspace IPv4 URLs: **6 passed in 11.8s**. The layout-only fixture uses mocked fictional records and creates no database row; standard CRUD uses real FastAPI/PostgreSQL. Screenshots were visually inspected. The first browser attempt reached a separate older Desktop IPv6 app via localhost; explicit E2E_BASE_URL/E2E_API_BASE_URL settings ensure the current build is tested. Desktop services were preserved.
+
+The first full backend run encountered a pre-existing shared-test-database record and failed empty-database assertions (9 failed, 97 passed). The record was preserved. A fresh visitdock_fixes_b437806_test database then passed all 106 cases. No table-wide cleanup was used.
+
+Strict npm peer resolution initially rejected plugins whose peer declarations stop at ESLint 9. The [official Next.js documentation](https://nextjs.org/docs/app/api-reference/config/eslint) states that the config supports ESLint 10 and explains these warnings. Normal install/clean install and runtime rule probes passed without force, legacy-peer options, overrides or rule suppression. Full npm audit still reports five high entries in the existing braces chain; production-only audit reports zero. This advisory is not falsely described as fixed by the CLI upgrade.
+
+The original review below describes bc94216. Its defect reproduction, original totals and historical line references are preserved as evidence rather than presented as current failures. Code checkpoint f9e04cf passed GitHub CI [run 38358224046](https://github.com/arrathikan/visitdock/actions/runs/38358224046), including the real browser step. The later documentation-only CI is reported in the conversation. See PROGRESS.md for involvement boundaries.
+
+
 Date: 2026-10-13, Asia/Colombo. Reviewed application commit: `bc94216b07912ef2ad5bc68e1f539b4350fa0c5b`, branch `main`, remote `https://github.com/arrathikan/visitdock.git`. Checkout was clean and matched origin/main before edits. This is an AI-led review; candidate and independent human sign-off are not established.
 
 ## Assessment
 
-The required API and standard UI flows are implemented and their automated checks passed again. Historical safety/precision/validation/CORS corrections were checked against actual current code and Git diffs. Two additional UX defects were reproduced outside the existing suite. **Documentation handoff is prepared; unconditional UX/submission sign-off remains pending.** This documentation task records findings without changing application behavior.
+The required API and standard UI flows are implemented and their automated checks passed again. Historical safety/precision/validation/CORS corrections were checked against actual current code and Git diffs. Two additional UX defects were reproduced outside the existing suite. **This was the initial documentation-only assessment.** The later candidate-requested corrections and verification are recorded in the current checkpoint above. Personal submission sign-off remains unverified.
 
-## Current open findings
+## Original findings at bc94216 — corrected above
 
 ### Medium — accepted long names overflow desktop and mobile
 
@@ -63,7 +83,7 @@ App Router shell, client workspace, typed fetch mapping and native modal compone
 
 Labels, visible focus, skip link, dialog semantics and Escape/focus restoration are implemented. Browser tests verified ordinary mobile layout and keyboard close/restoration. The two UX findings above qualify broader responsiveness/accessibility claims. TypeScript passing is compile-time evidence, not runtime validation of arbitrary remote JSON. No screen-reader or real-device Safari test is claimed.
 
-## Actual verification in this review
+## Original review verification at bc94216
 
 | Check | Command/result |
 | --- | --- |
@@ -96,4 +116,4 @@ Details and limits are in [AI_USAGE](../AI_USAGE.md). Dangerous historical clean
 
 The AI log is organized into nine requested sections with a qualified historical archive. The [candidate guide](CANDIDATE_REVIEW_GUIDE.md) contains code-reading priorities, questions and manual checks; the [reflection draft](CANDIDATE_REFLECTION_DRAFT.md) uses first person for confirmed candidate direction and separates it from AI-executed checks and unverified hands-on review. Existing progress/final-review/submission documents point to this fresh review.
 
-Candidate next steps: understand A–D, review the open findings, resolve or explicitly record acceptable limitations, personally exercise CRUD and restart persistence, fill genuine reflection, verify CI at the commit being submitted, and confirm company visibility/submission rules. No candidate completion statement is invented.
+Candidate next steps: understand A–D and the four follow-up corrections, review the remaining upstream warning and verification limits, personally exercise CRUD/restart persistence, add only genuine hands-on reflection, verify CI at the submitted commit, and confirm company visibility/submission rules. No candidate completion statement is invented.

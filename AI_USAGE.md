@@ -7,7 +7,7 @@ VisitDock is an internship demonstration for managing fictional clinic appointme
 This summary separates three evidence levels:
 
 - **Historical record:** earlier agent reports and committed diffs. A commit proves the code change, not who personally reviewed it.
-- **Current AI verification:** repository inspection and commands executed by Codex during this review on 2026-10-13, against application commit `bc94216`.
+- **AI verification:** the original review inspected bc94216; the later candidate-requested fixes were verified through f9e04cf on 2026-10-13, with current results recorded in the correction checkpoint.
 - **Candidate verification:** personal review, learning and approval remain unconfirmed until the candidate records them in section 9.
 
 The original work log, including prompts, slice results and commit references, is preserved in [AI_USAGE_HISTORY](docs/AI_USAGE_HISTORY.md). [PROGRESS](docs/PROGRESS.md) remains the chronological handoff. This is an AI-led review; no independent human review is claimed.
@@ -43,12 +43,13 @@ The repository uses a modular monolith: synchronous FastAPI/SQLAlchemy backend a
 | Edit timestamp precision | `dcb268a` |
 | Pinned backend dependencies | `7354eb0` |
 | Final implementation documentation / CI checkpoint | `9ffebce` / `bc94216` |
+| Guard / error descriptions / ESLint maintenance / wrapping follow-up | `6bf6d99` / `9f6ef39` / `27baa2a` / `f9e04cf` |
 
 ## 4. AI-generated code review methodology
 
 Compare requirements with routes, schemas, queries, migrations, UI and tests. Read the original and corrected Git versions for each claimed defect. Run the existing regression suite and inspect what the test actually proves. Check malformed inputs, timezones, missing records, database rollback, browser integration, feedback, keyboard behavior and responsive boundaries.
 
-This review reran the entire automated suite and added temporary, uncommitted browser experiments for accepted 150-character names and datetime error descriptions. Those experiments revealed gaps that the normal passing suite does not cover. Their evidence and proposed follow-ups are in [TECHNICAL_REVIEW](docs/TECHNICAL_REVIEW.md). Application code was not changed in this documentation review.
+The original bc94216 review reran the suite and added temporary browser experiments for 150-character names and datetime error descriptions. Those experiments revealed gaps outside the normal suite. The later candidate-requested follow-up implemented the four corrections and committed regressions. Both the original evidence and current resolutions are in [TECHNICAL_REVIEW](docs/TECHNICAL_REVIEW.md).
 
 ## 5. Identified defects and corrections
 
@@ -82,13 +83,20 @@ This review reran the entire automated suite and added temporary, uncommitted br
 
 **Tests/outcome:** hardening tests passed for allowed preflight, rejected origin, redacted database error and name-free repr. The error regression injects an OperationalError; it does not stop a real database or test every failure mode. Browser CRUD also passed through the actual CORS path. CORS is not authentication.
 
-### New review findings — open, not described as fixed
+### Follow-up findings — corrections requested by the candidate
 
-Accepted long unbroken names cause horizontal overflow; datetime inline errors are not linked through aria-describedby; the isolation test module contains an uncollected empty stub. The installed ESLint 9 line is end-of-life according to [ESLint's support page](https://eslint.org/version-support/). See the prioritized evidence in [TECHNICAL_REVIEW](docs/TECHNICAL_REVIEW.md). Candidate UX sign-off remains conditional on follow-up.
+The candidate selected the four documented findings and requested fixes with regression coverage and a compatible maintained lint upgrade. Implementation and command execution were AI-assisted; this does not establish personal hands-on coding or testing by the candidate.
+
+- Patient/doctor cells and confirmation text now wrap accepted 150-character unbroken names. Date/time stays readable on one line. A mocked-list Playwright regression checks full text, cell/page bounds and confirmation overflow on both viewport projects.
+- The datetime control describes both UTC help and its conditional inline error. Type/status controls also expose specific errors. Three unit cases assert accessible descriptions and retained inputs.
+- The empty guard stub is replaced by collected development/production/staging/empty-string rejection cases. The isolated backend suite contains 106 tests.
+- The lint CLI is pinned to maintained ESLint 10.12.0. The official Next config is preserved; normal install/lint/types/unit/build checks and intentional invalid-code probes verify compatibility. No force/legacy-peer flags or rule disabling were used. Next.js [documents support and lagging plugin peer ranges](https://nextjs.org/docs/app/api-reference/config/eslint); strict peer installation still rejects that metadata, and normal installs warn.
+
+The separate development-only braces advisory remains tracked. Verified follow-up: 106 backend tests (0.65s), 12 frontend tests, clean install/lint/types/build, seven active rule groups and six browser cases (11.8s). Commits: guard 6bf6d99, form 9f6ef39, lint 27baa2a, layout f9e04cf. See the current technical/progress checkpoint for preserved failure evidence and remaining upstream warnings.
 
 ## 6. Regression testing evidence
 
-Commands below were executed during this review; earlier results are preserved separately.
+The table below records the earlier review at bc94216. Follow-up verification for the requested fixes is recorded in PROGRESS.md and the current technical-review checkpoint; historical results are preserved rather than rewritten.
 
 | Verification | Actual result |
 | --- | --- |
@@ -118,9 +126,9 @@ Repository decisions, not unconfirmed candidate personal choices:
 
 ## 8. Limitations
 
-Passing tests cover the specified scenarios, not all input or accessibility cases. The new long-name and error-description findings remain open. No real-device iOS/Safari, screen-reader certification or formal WCAG audit was performed. No manual server-restart walkthrough was executed in this review.
+Passing tests cover the specified scenarios, not every input or accessibility case. The four follow-up findings have targeted corrections and regression coverage; the upstream development dependency advisory remains separate. No real-device iOS/Safari, screen-reader certification or formal WCAG audit was performed. No manual server-restart walkthrough was executed in this review.
 
-Full npm audit still reports five high entries in the development-only Next ESLint → fast-glob → micromatch → braces chain. The [braces advisory](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) concerns deeply nested-pattern denial of service and lists no patched version. Production-only npm audit reported zero; this is not a comprehensive security certification. A maintained, compatible lint-tool upgrade needs separate verification. No forced major downgrade was used.
+Full npm audit still reports five high entries in the development-only Next ESLint → fast-glob → micromatch → braces chain. The [braces advisory](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) concerns deeply nested-pattern denial of service and lists no patched version. Production-only npm audit reported zero; this is not a comprehensive security certification. ESLint 10.12 is now runtime-verified with the official Next configuration. Some included plugins still declare pre-10 peer ranges, so normal npm installs warn and strict peer mode rejects them, as Next.js documents. No force or legacy-peer flag was used; the advisory was not falsely marked resolved.
 
 This review checked Python dependency consistency, not a Python CVE scanner. The application has no authentication and must not handle sensitive patient data. Concurrent edits are last-write-wins. Earlier B01–B03 tool/model and human-validation claims remain inherited, not personally attested.
 
@@ -134,9 +142,9 @@ I used AI assistance to continue the existing VisitDock repository and complete 
 
 I required the work to use fictional patient data, preserve unrelated changes and databases, avoid force pushes and history rewrites, and leave deployment outside the approved scope. I asked for feature-sized commits and normal pushes to GitHub.
 
-I requested real automated verification, GitHub Actions evidence, review of earlier AI-generated corrections and a candidate-friendly handoff. I also requested an organized AI usage log and reflection draft. The AI implemented and reviewed the code and executed the technical checks recorded in this document. These results are attributed to the AI workflow.
+I requested real automated verification, GitHub Actions evidence, review of earlier AI-generated corrections and a candidate-friendly handoff. I then selected the four documented findings for correction and requested wrapping regression coverage, accessible error descriptions, collected guard tests and a maintained compatible lint upgrade. I also requested an organized AI usage log and reflection draft. The AI implemented and reviewed the code and executed the technical checks recorded in this document. These results are attributed to the AI workflow.
 
-The review records corrections for unsafe test cleanup, datetime precision loss, numeric datetime coercion and browser/database error handling. It also records open UX and dependency findings. The documentation preserves those AI findings and results with their verification limits.
+The review records corrections for unsafe test cleanup, datetime precision loss, numeric datetime coercion and browser/database error handling. The four follow-up findings were selected for correction at my request; the documentation records the verified changes and the remaining upstream dependency warning. The documentation preserves those AI findings and results with their verification limits.
 
 ### Verification status
 
@@ -146,9 +154,14 @@ The review records corrections for unsafe test cleanup, datetime precision loss,
 | Required fictional data, database preservation and safe Git operations | Confirmed by candidate requests |
 | Requested feature commits, pushes, tests, CI and final review | Confirmed by candidate requests |
 | Requested documentation and reflection preparation | Confirmed by candidate requests |
+| Selected four review findings and directed their correction | Confirmed by candidate request; implementation/checks AI-assisted |
 | Personally inspected source files or ran the checks | Not established by this record |
 | Personally reproduced the manual CRUD/restart walkthrough | Not established by this record |
 | Demonstrated understanding of the architecture or corrections | Suggested answers provided in the guide; personal understanding not assessed |
 | Confirmed company submission/visibility rules | Not established by this record |
 
 The narrative of confirmed involvement is complete. Personal technical sign-off remains unverified and must not be represented as completed. The [candidate review guide](docs/CANDIDATE_REVIEW_GUIDE.md) provides a practical walkthrough and self-study answers; the [reflection draft](docs/CANDIDATE_REFLECTION_DRAFT.md) uses the same evidence boundaries.
+
+### Follow-up CI evidence
+
+Code checkpoint f9e04cf passed GitHub CI [run 38358224046](https://github.com/arrathikan/visitdock/actions/runs/38358224046); all four jobs and the real PostgreSQL browser step executed successfully. The subsequent docs-only run is reported after push.

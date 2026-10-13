@@ -59,7 +59,7 @@ npm run test
 npm run build
 ```
 
-For real browser tests, start **test-database** API and production frontend services using [browser testing instructions](docs/BROWSER_TESTING.md), then run `npm run test:e2e`. CI runs scaffold, 103 backend tests, frontend lint/types/9 unit tests/build, and desktop/mobile PostgreSQL-backed browser tests. See [verified progress](docs/PROGRESS.md) for actual run results and commit history.
+For real browser tests, start **test-database** API and production frontend services using [browser testing instructions](docs/BROWSER_TESTING.md), then run `npm run test:e2e`. CI runs scaffold, 106 backend tests, frontend lint/types/12 unit tests/build, and desktop/mobile PostgreSQL-backed browser tests. See [verified progress](docs/PROGRESS.md) for actual run results and commit history.
 
 `python3 scripts/check_scaffold.py` checks documentation packaging and links; it does not validate app functionality. `docker compose down` preserves the database volume.
 

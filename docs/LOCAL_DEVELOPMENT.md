@@ -83,3 +83,7 @@ python scripts/check_scaffold.py
 ```
 
 This verifies packaging, not application behavior.
+
+## Test database with existing records
+
+Tests assume an empty dedicated test database. If manual demonstration records already exist there, preserve them and use a fresh local database whose name ends in _test. See [browser testing isolation](BROWSER_TESTING.md). The savepoint fixture rolls back test-owned changes; it does not erase pre-existing records.

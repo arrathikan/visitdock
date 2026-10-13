@@ -6,7 +6,7 @@ Prepared on 2026-10-13. This draft uses first person for involvement confirmed b
 
 I used AI assistance to continue the existing VisitDock internship project. My role in the recorded workflow was to direct the work, set its order and constraints, and request evidence for the result. I asked for the remaining backend phases to be completed before the frontend, followed by real API integration, browser testing and final documentation.
 
-I required fictional patient data, preservation of unrelated changes and databases, small feature commits and normal Git pushes. I excluded force pushes, history rewriting and deployment without separate approval. I then requested an evidence-based technical review, an organized AI usage log and a candidate review guide.
+I required fictional patient data, preservation of unrelated changes and databases, small feature commits and normal Git pushes. I excluded force pushes, history rewriting and deployment without separate approval. I then requested an evidence-based technical review, an organized AI usage log and a candidate review guide. After that review listed four findings, I selected them for correction and asked for regression tests and a compatible maintained lint upgrade.
 
 The AI handled implementation, technical code review, automated checks and documentation preparation. I have kept those activities attributed to the AI workflow rather than presenting its test execution or defect discovery as my own.
 
@@ -22,20 +22,20 @@ One early test fixture could delete unrelated records because it used the config
 
 Another correction prevents a doctor-only edit from losing timestamp precision. A third rejects numeric epoch inputs where the contract requires ISO datetime strings. CORS middleware and a generic database-failure response were also added and tested.
 
-These are genuine changes visible in Git history. The current AI review checked their code and regression tests. It also found open issues: long unbroken names can overflow the layout, the datetime field does not reference its inline validation error, a test stub is not collected, and the installed lint-tool line needs maintenance. Those findings remain visible in the handoff.
+These are genuine changes visible in Git history. The current AI review checked their code and regression tests. It also found long-name overflow, missing datetime error association, an uncollected test stub and an unsupported lint-tool line. I requested those corrections. The follow-up adds selective name wrapping and browser coverage, links field errors with accessible descriptions, collects four unsafe-environment cases and upgrades the CLI to ESLint 10.12 with the official Next configuration. The AI implemented the changes and executed verification; I am not presenting those hands-on activities as my own. Historical findings and their correction evidence remain visible in the handoff.
 
 ## Verification evidence
 
-The AI review reran the checks on 2026-10-13: 103 backend tests, 9 frontend tests and 4 desktop/mobile browser tests passed. Dependency consistency, Ruff, ESLint, TypeScript, the production build and Alembic schema comparison passed. The browser CRUD path used real FastAPI and PostgreSQL; failure-state tests used request interception.
+The earlier AI review ran 103 backend tests, 9 frontend tests and 4 desktop/mobile browser tests. The follow-up fixes expand the suites to 106 backend tests, 12 frontend tests and six desktop/mobile browser cases; verified outcomes are recorded in PROGRESS.md. Dependency consistency, Ruff, ESLint, TypeScript, the production build and Alembic schema comparison passed. The browser CRUD path used real FastAPI and PostgreSQL; failure-state and layout-only tests use request interception. The follow-up used an empty isolated database and explicit IPv4 workspace URLs to preserve existing local records/services.
 
-GitHub Actions run [38353180884](https://github.com/arrathikan/visitdock/actions/runs/38353180884) passed for application commit bc94216, including the actual browser step. The documentation handoff has its own later commit and CI result.
+GitHub Actions run [38353180884](https://github.com/arrathikan/visitdock/actions/runs/38353180884) passed for application commit bc94216, including the actual browser step. The later four-fix code checkpoint f9e04cf passed [run 38358224046](https://github.com/arrathikan/visitdock/actions/runs/38358224046). The documentation handoff has its own later commit and CI result.
 
-Production-only npm audit reported zero vulnerabilities. The full development dependency audit reported five high entries from one lint-tool dependency chain. No production security certification, real-device Safari test or screen-reader certification is claimed.
+Production-only npm audit reported zero vulnerabilities. The full development dependency audit reported five high entries from one lint-tool dependency chain. ESLint 10.12 now passes runtime compatibility checks; included plugins still emit outdated peer-range warnings documented by Next.js. The separate unpatched development audit chain remains. No production security certification, real-device Safari test or screen-reader certification is claimed.
 
 ## Personal verification status
 
 My confirmed contribution in this record is directing the AI-assisted workflow and requesting its evidence and handoff. This draft does not claim that I personally inspected particular code files, ran commands, reproduced defects or learned specific concepts. Those statements require real personal review before inclusion in a submission.
 
-The [candidate guide](CANDIDATE_REVIEW_GUIDE.md) supplies suggested technical answers and a manual walkthrough. The [technical review](TECHNICAL_REVIEW.md) lists the remaining engineering findings. Personal technical sign-off and company submission/visibility confirmation remain unverified.
+The [candidate guide](CANDIDATE_REVIEW_GUIDE.md) supplies suggested technical answers and a manual walkthrough. The [technical review](TECHNICAL_REVIEW.md) records the four corrections, the remaining upstream dependency warning and verification limits. Personal technical sign-off and company submission/visibility confirmation remain unverified.
 
 This reflection can be used as a factual account of the recorded workflow. Any later first-person statement about hands-on review or learning should be added only after it actually occurs.

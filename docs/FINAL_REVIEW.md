@@ -1,6 +1,6 @@
 # Final AI review — 2026-10-13
 
-> **Latest follow-up review:** See [TECHNICAL_REVIEW](TECHNICAL_REVIEW.md) for the 2026-10-13 re-verification and new long-name overflow, validation-description, test-stub and lint-maintenance findings. Standard automated checks pass; unconditional UX sign-off remains pending. The earlier assessment below is historical and does not override these findings. Candidate direction is documented; personal code review and test execution are unverified.
+> **Current follow-up:** The four requested findings are corrected with regression coverage: name wrapping f9e04cf, accessible errors 9f6ef39, collected guard cases 6bf6d99 and supported ESLint 10.12 in 27baa2a. Verified: 106 backend tests, 12 frontend tests and 6 desktop/mobile browser cases, plus lint/types/build and active-rule probes. See [TECHNICAL_REVIEW](TECHNICAL_REVIEW.md). Upstream dev audit/peer metadata warnings remain; human hands-on sign-off is unverified. Earlier results below are historical.
 
 ## Verdict
 

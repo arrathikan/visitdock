@@ -3,8 +3,8 @@
 `.github/workflows/ci.yml` runs on pushes to main, pull requests and manual dispatch. Permissions are `contents: read`; concurrent older runs on the same ref are cancelled.
 
 - Scaffold: checks required documentation and local links.
-- Backend: Python 3.13, pinned requirements-dev.lock, ephemeral PostgreSQL 17 `visitdock_test`, Ruff and real Pytest integration tests (103 cases).
-- Frontend: Node 24, npm ci, lint, typecheck, 9 unit tests and production build. A separate PostgreSQL 17 service in this job supports Alembic, FastAPI and production Next.js startup, followed by Playwright Chromium desktop/mobile tests. Failed checks fail the job.
+- Backend: Python 3.13, pinned requirements-dev.lock, ephemeral PostgreSQL 17 `visitdock_test`, Ruff and real Pytest integration tests (106 cases).
+- Frontend: Node 24, npm ci, lint, typecheck, 12 unit tests and production build. A separate PostgreSQL 17 service in this job supports Alembic, FastAPI and production Next.js startup, followed by six Playwright Chromium desktop/mobile tests, including maximum-length name layout. Failed checks fail the job.
 
 The Q01 run [38351468077](https://github.com/arrathikan/visitdock/actions/runs/38351468077) succeeded, with all four jobs and the actual PostgreSQL browser step executed. Later audit fixes and final handoff runs are recorded in [PROGRESS](PROGRESS.md).
 

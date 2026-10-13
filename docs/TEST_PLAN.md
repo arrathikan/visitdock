@@ -1,6 +1,6 @@
 # Test strategy and acceptance checks
 
-> Verified locally: 103 backend tests, 9 frontend unit tests, and 4 real-browser desktop/mobile tests. CI run evidence is recorded in PROGRESS.md.
+> Verified locally: 106 backend tests and 12 frontend unit tests. The browser suite contains six desktop/mobile cases, including maximum-length name wrapping; verified results are recorded in PROGRESS.md. CI run evidence is recorded in PROGRESS.md.
 
 ## Backend tests (Pytest + HTTPX + PostgreSQL)
 
@@ -49,3 +49,10 @@ Use FastAPI `/docs` to test API first; then exercise UI in real browser. Include
 Do not claim a passing command unless it actually ran successfully. Failures are evidence for improvement and can be documented in `AI_USAGE.md`.
 
 See [BROWSER_TESTING](BROWSER_TESTING.md) for exact service setup, isolation, request interception boundaries and browser commands. Final audit added regressions for numeric datetime coercion, extreme date conversion and preserving seconds/milliseconds during edit. Those regressions failed before correction and passed afterward.
+
+## Follow-up regressions
+
+- Accepted 150-character unbroken patient/doctor names remain fully rendered inside table/mobile cells and confirmation dialogs without page overflow. The list-only fixture is mocked; no database row is created for this layout test.
+- Date/time validation describes both the UTC help and its inline error. Type/status controls also expose specific errors; unit tests assert accessible descriptions and retained values.
+- The environment rejection test now collects development, production, staging and empty-string cases. The pure guard is called before database use.
+- ESLint 10.12 compatibility is verified with the official Next config, project lint/types/build and intentional invalid-code probes. Stale plugin peer warnings and the known dev audit chain remain disclosed.

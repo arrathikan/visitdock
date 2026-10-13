@@ -38,11 +38,13 @@ Explain FastAPI vs Fastify, PostgreSQL choice, model and validation, routes/erro
 
 ## Follow-up review status — 2026-10-13
 
-The earlier checked items describe standard flows and executed automated verification. They are not personal candidate attestations. See [TECHNICAL_REVIEW](TECHNICAL_REVIEW.md) for newly reproduced limits.
+The earlier checked items describe standard flows and executed automated verification. They are not personal candidate attestations. See [TECHNICAL_REVIEW](TECHNICAL_REVIEW.md) for original reproductions, verified corrections and remaining verification limits.
 
-- [ ] Correct accepted long-name overflow before claiming complete responsive input coverage.
-- [ ] Associate datetime inline errors with the input and verify the accessible description.
-- [ ] Remove or implement the uncollected isolation-test stub; verify a maintained compatible lint toolchain.
+- [x] Accepted 150-character name overflow corrected and covered by desktop/mobile cell/page/confirmation regression.
+- [x] Datetime, type and status errors associated with controls; accessible-description/retention regressions passed.
+- [x] Unsafe environment cases collected; ESLint 10.12 runtime compatibility verified with official Next config and active-rule probes.
+- [x] Separate upstream development dependency advisory and outdated plugin peer metadata are documented.
+- [ ] Continue monitoring those upstream dependencies for compatible updates.
 - [x] Candidate direction, scope and verification requests documented from conversation evidence.
 - [x] Reflection draft and suggested technical answers prepared without invented hands-on involvement.
 - [ ] Candidate personally reviews source, performs the manual walkthrough/restart and records genuine learning.
