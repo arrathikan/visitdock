@@ -1,3 +1,5 @@
+> **Current implementation:** B01–B06, F01–F03 and browser CI are implemented. Follow the root [README](README.md) to run the app and [final review](docs/FINAL_REVIEW.md) for submission. The original starter onboarding below is historical guidance.
+
 # Start here: building VisitDock with AI
 
 This is a ready-to-copy **project context and workflow pack**, **not** a generated working appointment application.

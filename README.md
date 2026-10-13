@@ -1,147 +1,87 @@
 # VisitDock
 
-**Clinic Appointment Management System** — an internship take-home project.
+A compact clinic appointment workspace for an internship take-home assignment. **Fictional data only.** Backend-first implementation: FastAPI, SQLAlchemy, Alembic and PostgreSQL 17; Next.js App Router, TypeScript and Tailwind frontend.
 
-> **Current state:** Backend CRUD, search/filter, timezone-aware pagination and browser access are implemented and verified through B06. Frontend implementation is in progress; no deployment is configured.
+Implemented: create, paginated list, details, full update, confirmed deletion, patient/doctor search, combined doctor/status/clinic-date filters, responsive rows, accessible modal drawers, and loading/empty/error/retry states. No authentication, booking-conflict rules or deployment is included.
 
-## What we're building
+## Run locally
 
-A small, usable web application that lets clinic staff **create, view, edit, delete, search, and filter** fictional patient appointments. Every appointment includes a patient name, appointment date/time, doctor, type, and status.
+Requirements: Python **3.13** (tested), Node **24.15+**, npm, Docker Desktop with Compose. PostgreSQL is exposed on host port **5433**.
 
-**Backend-first implementation:** Python / FastAPI, PostgreSQL, SQLAlchemy 2, Alembic, Pydantic 2, Pytest; then Next.js App Router / TypeScript / Tailwind CSS. The visual direction is a restrained, editorial clinic workspace rather than a generic AI dashboard.
-
-## First five minutes
-
-1. Extract the ZIP. Open the `visitdock/` folder in Cursor, VS Code, Claude Code, Codex, or a similar coding agent.
-2. Read [`START_HERE.md`](START_HERE.md) and [`AGENTS.md`](AGENTS.md).
-3. Optional local database: install Docker Desktop, then run:
-   ```bash
-   cp .env.example .env
-   docker compose up -d db
-   ```
-   On Windows PowerShell, use `Copy-Item .env.example .env` instead of `cp`.
-4. Check the starter contents using `python scripts/check_scaffold.py`.
-5. Give the coding agent the text in [`prompts/00_AGENT_ONBOARDING.md`](prompts/00_AGENT_ONBOARDING.md), then **only** [`prompts/B01_BACKEND_FOUNDATION.md`](prompts/B01_BACKEND_FOUNDATION.md).
-6. After each slice: inspect diff → run checks → manually review → update [`AI_USAGE.md`](AI_USAGE.md) and [`docs/PROGRESS.md`](docs/PROGRESS.md) → commit.
-
-**Important:** FastAPI is the Python framework. **Fastify** is a separate Node.js framework; this repo intentionally uses **FastAPI**.
-
-## Scope and status
-
-| Area | Planned | Implemented |
-| --- | --- | --- |
-| FastAPI foundation & `/health` endpoint | Yes | **Implemented (B01)** |
-| Create/view/edit/delete appointments | Yes | **Implemented (B04)** |
-| Search + filters | Yes | **Implemented (B05)** |
-| Validation and helpful errors | Yes | **Implemented for Create & List (B03)** |
-| PostgreSQL persistence + migrations | Yes | **Implemented (B02)** |
-| Automated API and browser tests | Yes | **99 automated backend tests (B01-B06)**; browser tests pending |
-| Dedicated test DB isolation & safeguards | Yes | **Implemented (B03)**: `visitdock_test` + transaction rollback |
-| Responsive VisitDock UI | Yes | No (Planned F01-F03) |
-| Local Docker PostgreSQL | Yes | **Verified & active on port 5433** |
-| GitHub Actions CI | Yes | **Scaffold check + backend CI active with PostgreSQL 17** |
-| Automatic production deployment | Optional | **Not configured** |
-
-## Quick reference
-
-- Project brief and acceptance criteria: [`docs/PRODUCT_REQUIREMENTS.md`](docs/PRODUCT_REQUIREMENTS.md)
-- Architecture and boundaries: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
-- API contract: [`docs/API_CONTRACT.md`](docs/API_CONTRACT.md)
-- Data contract: [`docs/DATA_MODEL.md`](docs/DATA_MODEL.md)
-- Visual direction: [`docs/UI_DESIGN.md`](docs/UI_DESIGN.md)
-- Tests and manual QA: [`docs/TEST_PLAN.md`](docs/TEST_PLAN.md)
-- Responsible use of AI: [`AI_USAGE.md`](AI_USAGE.md)
-- CI/CD setup: [`docs/CI_CD.md`](docs/CI_CD.md)
-- Build and hand-in checklist: [`docs/SUBMISSION_CHECKLIST.md`](docs/SUBMISSION_CHECKLIST.md)
-
-## Repository overview
-
-```text
-visitdock/
-├── AGENTS.md                  # Canonical instructions for coding agents
-├── CLAUDE.md                  # Claude Code adapter
-├── START_HERE.md              # Step-by-step human launch guide
-├── AI_USAGE.md                # Evidence-based AI work log
-├── backend/                   # FastAPI backend service (B01-B02 implemented)
-│   ├── alembic/               # Database migrations (initial schema)
-│   ├── app/                   # Application package
-│   │   ├── appointments/      # Appointment models and domain logic
-│   │   ├── core/              # Settings & config
-│   │   └── db/                # Engine, DeclarativeBase, session dependency
-│   ├── tests/                 # Automated Pytest suite (health & DB integration)
-│   ├── alembic.ini            # Alembic configuration
-│   ├── pyproject.toml         # Dependencies and tool configurations
-│   └── README.md              # Backend-specific instructions
-├── frontend/                  # Added only after backend completion
-├── docs/                      # Product, API, UX, test, ops, CI/CD docs
-├── prompts/                   # Copy-ready prompts for each small slice
-├── fixtures/                  # Fictional examples only
-├── scripts/check_scaffold.py  # Dependency-free starter checks
-├── .github/workflows/ci.yml   # Scaffold checks; conditional app checks
-└── compose.yaml               # Local PostgreSQL only
-```
-
-## Commands available **right now**
-
-### Starter and local database
+From repository root:
 
 ```bash
-python3 scripts/check_scaffold.py
-cp .env.example .env        # Windows PowerShell: Copy-Item .env.example .env
+cp .env.example .env
 docker compose up -d db
-docker compose ps
-docker compose down         # preserves Postgres volume
-```
-
-### Backend development (verified in B01 & B02)
-
-From the repository root or `backend/` directory:
-
-```bash
-# 1. Start local PostgreSQL (runs on localhost:5433)
-docker compose up -d db
-
-# 2. Navigate to backend directory
 cd backend
-
-# 3. Create isolated virtual environment
 python3 -m venv .venv
-
-# 4. Activate virtual environment
-# macOS / Linux:
 source .venv/bin/activate
-# Windows PowerShell:
-# .venv\Scripts\Activate.ps1
-
-# 5. Install backend in editable mode with development dependencies
-python -m pip install -e ".[dev]"
-
-# 6. Run database migrations
+python -m pip install -r requirements-dev.lock
+python -m pip install -e '.[dev]' --no-deps
+cp .env.example .env
 alembic upgrade head
-
-# 7. Inspect migration status
-alembic current
-alembic history
-
-# 8. Run linting
-ruff check .
-
-# 9. Run automated tests (runs both health and PostgreSQL integration tests)
-APP_ENV=test DATABASE_URL=postgresql+psycopg://visitdock:visitdock_dev_only@localhost:5433/visitdock_test python -m pytest -q
-
-# 10. Start local development server
 uvicorn app.main:app --reload --port 8000
 ```
 
-Once running:
-- Health check: [http://localhost:8000/health](http://localhost:8000/health) (returns `{"status":"ok"}`)
-- Interactive OpenAPI documentation: [http://localhost:8000/docs](http://localhost:8000/docs)
-- OpenAPI schema JSON: [http://localhost:8000/openapi.json](http://localhost:8000/openapi.json)
+In another terminal, from `frontend/`:
 
-## Data and privacy
+```bash
+cp .env.example .env.local
+npm ci
+npm run dev
+```
 
-This is a **fictional-data-only** demonstration. Never enter real patient names, medical history, contact information, or confidential company information. See [`docs/SECURITY_AND_PRIVACY.md`](docs/SECURITY_AND_PRIVACY.md).
+Open [VisitDock](http://localhost:3000), [API documentation](http://localhost:8000/docs), or [process health](http://localhost:8000/health). On Windows activate the environment using `.venv\Scripts\Activate.ps1`; copy files with `Copy-Item`.
 
-## Project ownership / license
+Environment variables override `backend/.env`. Set backend `CLINIC_TIMEZONE` and frontend `NEXT_PUBLIC_CLINIC_TIMEZONE` to the **same IANA timezone** (both default UTC). Rebuild the frontend after changing public variables. The list and date filter use clinic time; the form explicitly accepts **UTC** to avoid ambiguous local DST times. Editing another field preserves the original instant, including seconds and milliseconds. `CORS_ORIGINS` is a comma-separated allowlist; use `http://localhost:3000` when opening the app.
 
-This is a candidate's take-home project scaffold. Verify the company's submission and public-repository rules before publishing; no license has been presumed.
+## Verify
+
+Create the isolated test database once, from repository root (skip if it exists):
+
+```bash
+docker exec -i visitdock-db-1 psql -U visitdock -d postgres -c "CREATE DATABASE visitdock_test OWNER visitdock;"
+```
+
+From `backend/`, with the environment active:
+
+```bash
+ruff check .
+APP_ENV=test DATABASE_URL=postgresql+psycopg://visitdock:visitdock_dev_only@localhost:5433/visitdock_test python -m pytest -q
+```
+
+Pytest rejects non-test environments/databases and uses transaction rollback. Never run it against development records. From `frontend/`:
+
+```bash
+npm run lint
+npm run typecheck
+npm run test
+npm run build
+```
+
+For real browser tests, start **test-database** API and production frontend services using [browser testing instructions](docs/BROWSER_TESTING.md), then run `npm run test:e2e`. CI runs scaffold, 103 backend tests, frontend lint/types/9 unit tests/build, and desktop/mobile PostgreSQL-backed browser tests. See [verified progress](docs/PROGRESS.md) for actual run results and commit history.
+
+`python3 scripts/check_scaffold.py` checks documentation packaging and links; it does not validate app functionality. `docker compose down` preserves the database volume.
+
+## API
+
+Base path: `/api/v1/appointments`.
+
+| Method | Path | Behavior |
+| --- | --- | --- |
+| POST | base | Create, 201 |
+| GET | base | Search/filter/paginate, 200 |
+| GET | `/{id}` | Details, 200 / 404 |
+| PUT | `/{id}` | Replace all five editable fields, 200 / 404 |
+| DELETE | `/{id}` | Empty 204 / 404 |
+
+Validation errors return 422; database failures return a generic 503. UUIDs and timestamps are server managed. Search is a literal case-insensitive substring across patient/doctor; doctor filtering is case-insensitive exact matching. Date windows use clinic midnight boundaries converted to UTC, including DST. Ordering is appointment time then UUID. Page size is 1–100. See the [full API contract](docs/API_CONTRACT.md).
+
+## Review and submission
+
+- [Architecture](docs/ARCHITECTURE.md), [data model](docs/DATA_MODEL.md), [visual brief](docs/UI_DESIGN.md)
+- [Test strategy](docs/TEST_PLAN.md), [CI](docs/CI_CD.md), [local setup](docs/LOCAL_DEVELOPMENT.md)
+- [Security and privacy](docs/SECURITY_AND_PRIVACY.md), [AI work log](AI_USAGE.md), [final review](docs/FINAL_REVIEW.md)
+- [Submission checklist](docs/SUBMISSION_CHECKLIST.md)
+
+Use invented names only. This demonstration has no authentication and is not suitable for sensitive records or public production use. Human candidate review, personal AI-use reflection and company submission/visibility confirmation remain candidate-owned tasks. No human review has been fabricated. No license is presumed.

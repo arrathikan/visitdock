@@ -1,16 +1,17 @@
 # AI Assistance, Review, and Corrections Log
 
-> **Starter state:** No AI-generated application implementation exists yet. This document is a **template**, not evidence that any application tests, review, or corrections have been performed.
+> This log contains historical agent reports for B01–B03 and actual Codex work/checks for B04–R01. Historical human-validation claims below were inherited and have not been independently confirmed; candidate review and personal reflection remain pending.
 
 The take-home task explicitly allows AI, and evaluators want to understand **how AI suggestions were checked and corrected**. Record truthful, candidate-owned decisions. Do not fabricate a bug, a fix, a prompt, or a result.
 
-## Tools used (fill in as actually used)
+## Tools used
 
-| Tool / model | Task performed | Date / slice | Human validation |
+| Tool / model | Task performed | Date / slice | Validation status |
 | --- | --- | --- | --- |
 | Gemini 3.8 Flash (Medium) / Antigravity | B01 FastAPI backend foundation, tests, configuration, documentation | 2026-10-13 / B01 | Verified commands, tests, endpoints, and diffs |
 | Gemini 3.8 Flash (Medium) / Antigravity | B02 PostgreSQL persistence, Alembic migrations, DB integration tests | 2026-10-13 / B02 | Verified Docker Postgres, Alembic up/down, Pytest suite |
 | Gemini 3.8 Flash (Medium) / Antigravity | B03 Create & List Appointments API, test database isolation safeguards | 2026-10-13 / B03 | Verified test isolation, rollback fixture, endpoint responses, curl smoke tests |
+| Codex / current session | B04–B06, F01–F03, Q01 and R01 implementation, AI review and verification | 2026-10-13 | Actual automated checks and AI visual review; human review pending |
 
 ## Slices
 
@@ -178,3 +179,11 @@ Explain which decisions were human-made, how the candidate validated AI output, 
 - Reproduced doctor-only edit changing appointment_at from 09:30:42.123 to 09:30:00.000. The regression failed before the fix.
 - Preserve the original instant when the minute-level time input is unchanged; conversion is inside form error handling.
 - Actual frontend lint/typecheck, **9 tests**, and production build passed. E2E source formatted for review. Human review pending.
+
+### R01 final documentation and handoff — 2026-10-13
+- AI audit compared implementation to product/API/UX/security/test requirements before fixes; recorded reproduced failures and separate correction commits. See FINAL_REVIEW.md (under docs).
+- Current verified checks: fresh locked Python 3.13 environment pip check + Ruff + **103 PostgreSQL tests**; frontend lint/types/**9 unit tests**/production build; **4 desktop/mobile browser tests**, with screenshots reviewed.
+- Production npm audit: **0 vulnerabilities**. One development-tool advisory produces 5 high dependency-chain entries; disclosed in final review. No forced major downgrade.
+- Rewrote current-state/setup/API/CI docs, retained historical reports and explicitly distinguished inherited human-validation claims from this AI session.
+- Implementation complete for agreed scope; candidate personal review/reflection, company submission rules and manual restart walkthrough remain candidate-owned. No cross-mode memory sync claimed. Durable handoff is in these documents.
+- Commits: B04 bdd831c; B05 11239c7; B06 bdd6bd0; F01 54fbe99; F02 288b69d; F03 7cd20b8; format 8bb8e91; Q01 5ccc8c4; backend audit c788ced; frontend audit dcb268a; reproducible backend 7354eb0. All pushed normally to main.

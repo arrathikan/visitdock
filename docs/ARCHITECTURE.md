@@ -17,7 +17,7 @@
 
 Backend and frontend live in separate directories within one repository. No service mesh, distributed system, or authentication service is needed.
 
-## Backend structure — intended, not yet created
+## Implemented backend structure
 
 ```text
 backend/
@@ -29,7 +29,7 @@ backend/
       models.py       # SQLAlchemy model
       schemas.py      # Pydantic request/response schemas
       router.py       # HTTP boundary
-      service.py      # application rules only if warranted
+      service.py      # optional; current rules are small and cohesive
   alembic/
   tests/
   pyproject.toml
@@ -61,3 +61,7 @@ A separate repository abstraction is **optional**; choose it only if testing/cla
 - Test actual API and database behavior; avoid mock-only confidence.
 
 See also [`DECISIONS.md`](DECISIONS.md) for decisions and non-goals.
+
+## Frontend implementation choices
+
+Client workspace uses a small typed fetch module; request cancellation avoids stale search responses. Native HTML dialogs handle keyboard focus and Escape; desktop forms are drawers and mobile forms full-screen. System fonts avoid network font dependencies. UTC form entry is visibly labelled; an unchanged minute field preserves the original full-precision timestamp. No additional global state or component framework is required.

@@ -11,3 +11,9 @@ The assignment is a demonstration app. **Use fictional data only.** This still m
 - No login/auth is implemented because the company did not require it. This is **not production-ready for sensitive patient data**. Document this limitation honestly.
 - Validate any AI-suggested third-party dependencies and avoid adding needless packages.
 - Never commit API keys or tokens; if one is accidentally exposed, revoke/rotate and purge it according to applicable policy.
+
+## Verified implementation safeguards
+
+Explicit configured CORS origins/methods, generic database-failure responses, name-free ORM repr, ISO datetime validation, enum checks, escaped parameterized search and bounded pagination are covered by regressions. Pytest requires APP_ENV=test plus a recognized test database; E2E cleans only generated IDs.
+
+Production npm dependency audit reported 0 vulnerabilities on 2026-10-13. The development-only Next ESLint braces dependency advisory remains documented in [final review](FINAL_REVIEW.md); no forced major-version downgrade was used. No authentication or production hosting is included.

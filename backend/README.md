@@ -11,7 +11,8 @@ docker compose up -d db
 # 2. From backend directory:
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -e ".[dev]"
+python -m pip install -r requirements-dev.lock
+python -m pip install -e ".[dev]" --no-deps
 ```
 
 ## Database Migrations (Alembic)
@@ -26,8 +27,8 @@ alembic current
 # Show migration history:
 alembic history
 
-# Downgrade by 1 revision (CAUTION: destructive to table data):
-alembic downgrade -1
+# Schema inspection without modifying records:
+alembic history
 ```
 
 ## Dedicated Test Database & Safety
@@ -55,11 +56,16 @@ uvicorn app.main:app --reload --port 8000
 - OpenAPI Docs: `http://localhost:8000/docs`
 - ReDoc: `http://localhost:8000/redoc`
 
-## Implemented Endpoints (B01 - B03)
+## Implemented Endpoints (B01–B06)
 
 - `GET /health` — Lightweight service health check
 - `POST /api/v1/appointments` — Create appointment with Pydantic v2 validation (201 Created)
-- `GET /api/v1/appointments` — List appointments with database pagination (`page`, `page_size`, deterministic sorting by `appointment_at ASC, id ASC`)
+- `GET /api/v1/appointments` — Search patient/doctor and combine doctor, status, clinic-date filters with bounded SQL pagination.
+- `GET /api/v1/appointments/{id}` — Details, 200 or 404; malformed UUID is 422.
+- `PUT /api/v1/appointments/{id}` — Full replacement with create validation; every accepted replacement advances updated_at, even identical values.
+- `DELETE /api/v1/appointments/{id}` — Empty 204 or 404.
+
+Settings validate IANA clinic timezones. Date windows use midnight in CLINIC_TIMEZONE converted to UTC (including DST); unsupported boundary dates return 422. Datetimes must be offset-aware ISO strings, never numeric epochs. DB errors return generic 503; CORS allows explicit configured origins. Fictional records only. The full suite contains 103 tests.
 
 ## Tests and Linting
 

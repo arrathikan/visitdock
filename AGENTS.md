@@ -47,4 +47,4 @@ Read before editing: `README.md`, `docs/PRODUCT_REQUIREMENTS.md`, `docs/ARCHITEC
 
 ## Completion is not a claim
 
-This starter contains no working backend or frontend code. `docs/PROGRESS.md` is authoritative for confirmed implementation progress. Green **scaffold** checks are not proof that CRUD exists.
+`docs/PROGRESS.md` is authoritative for confirmed implementation progress. The application is implemented through the final audit; preserve the verified contracts and tests. Green **scaffold** checks alone are not proof that CRUD exists.

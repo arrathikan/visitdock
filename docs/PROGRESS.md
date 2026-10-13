@@ -1,6 +1,6 @@
 # Implementation progress / handoff checkpoint
 
-**State as packaged:** Documentation and local infrastructure starter supplied. **No backend code, frontend code, Alembic migration, app tests, or deployment has been implemented.**
+**Latest state, 2026-10-13:** Backend B01–B06, frontend F01–F03 and Q01 browser CI implemented. R01 audit corrections verified locally: **103 backend tests, 9 frontend tests**, production build/lint/types and real desktop/mobile browser workflow. Q01 CI passed; final audit commit CI verification follows below. No deployment performed. Historical checkpoints below describe their state at that time.
 
 ## Verified in starter pack
 
@@ -164,3 +164,11 @@
 - Reproduced doctor-only edit changing appointment_at from 09:30:42.123 to 09:30:00.000. The regression failed before the fix.
 - Preserve the original instant when the minute-level time input is unchanged; conversion is inside form error handling.
 - Actual frontend lint/typecheck, **9 tests**, and production build passed. E2E source formatted for review. Human review pending.
+
+### R01 final documentation and handoff — 2026-10-13
+- AI audit compared implementation to product/API/UX/security/test requirements before fixes; recorded reproduced failures and separate correction commits. See FINAL_REVIEW.md (under docs).
+- Current verified checks: fresh locked Python 3.13 environment pip check + Ruff + **103 PostgreSQL tests**; frontend lint/types/**9 unit tests**/production build; **4 desktop/mobile browser tests**, with screenshots reviewed.
+- Production npm audit: **0 vulnerabilities**. One development-tool advisory produces 5 high dependency-chain entries; disclosed in final review. No forced major downgrade.
+- Rewrote current-state/setup/API/CI docs, retained historical reports and explicitly distinguished inherited human-validation claims from this AI session.
+- Implementation complete for agreed scope; candidate personal review/reflection, company submission rules and manual restart walkthrough remain candidate-owned. No cross-mode memory sync claimed. Durable handoff is in these documents.
+- Commits: B04 bdd831c; B05 11239c7; B06 bdd6bd0; F01 54fbe99; F02 288b69d; F03 7cd20b8; format 8bb8e91; Q01 5ccc8c4; backend audit c788ced; frontend audit dcb268a; reproducible backend 7354eb0. All pushed normally to main.

@@ -1,6 +1,6 @@
-# REST API contract — v1 (planned)
+# REST API contract — v1
 
-> This describes the **intended interface**. None of these application endpoints exist in the starter.
+> All documented appointment endpoints are implemented and covered by PostgreSQL-backed API tests.
 
 **Base path:** `/api/v1`  
 **Content type:** `application/json`  
@@ -73,6 +73,9 @@ Response:
 - `422` Pydantic validation error for malformed IDs, missing/invalid fields, invalid enum/date/page values, and datetime without timezone.
 - `404` JSON `{"detail": "Appointment not found"}` when an existing-format UUID does not identify a record.
 - `204` no body on successful delete.
+- `503` JSON `{"detail": "Appointment service unavailable"}` for database failures.
+- Numeric epoch inputs are rejected. Date windows outside Python's supported UTC range return 422.
+- Successful PUT preserves created_at and advances updated_at, including identical replacements.
 - Do not expose SQL statements, internal tracebacks, DB credentials, or personal information in error messages.
 
 ## OpenAPI

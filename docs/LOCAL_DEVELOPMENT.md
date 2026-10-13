@@ -4,9 +4,9 @@
 
 - Git and Python 3.12+ (to run the scaffold checker; backend implementation chooses/records exact runtime)
 - Docker Desktop / Docker Compose for local PostgreSQL
-- Later: Node.js LTS / npm for Next.js
+- Node.js >=24.15 / npm for Next.js (verified on 24.19)
 
-## Database only (starter)
+## Local database
 
 ```bash
 cp .env.example .env
@@ -23,7 +23,7 @@ docker compose down
 
 The command above preserves data. To deliberately erase local database data: `docker compose down -v` — **destructive**.
 
-## Backend (verified in B01, B02 & B03)
+## Backend (verified B01–B06, final audit)
 
 The backend uses Python 3.12+ (tested with 3.13), FastAPI, SQLAlchemy 2.x, Alembic, and PostgreSQL 17.
 
@@ -35,7 +35,8 @@ docker compose up -d db
 cd backend
 python3 -m venv .venv
 source .venv/bin/activate  # On Windows PowerShell: .venv\Scripts\Activate.ps1
-python -m pip install -e ".[dev]"
+python -m pip install -r requirements-dev.lock
+python -m pip install -e ".[dev]" --no-deps
 
 # 3. Apply database migrations to development database
 alembic upgrade head
@@ -69,9 +70,11 @@ Pytest requires `APP_ENV=test` and a dedicated test database (e.g. `visitdock_te
 
 Backend local environment configuration template is in `backend/.env.example`. Environment variables override local `.env` settings. Local PostgreSQL runs on host port `5433` (`DATABASE_URL=postgresql+psycopg://visitdock:visitdock_dev_only@localhost:5433/visitdock`), while CI runs on port `5432`.
 
-## Frontend (after F01)
+## Frontend
 
-The AI agent should install dependencies using npm, **commit the lockfile**, and document `npm ci`, `npm run dev`, lint, typecheck, test, build. `frontend/.env.example` contains only public API base URL. Do not place DB URL or server secrets in `NEXT_PUBLIC_*`.
+From frontend/, run `cp .env.example .env.local`, `npm ci`, then `npm run dev`. The browser opens at http://localhost:3000; FastAPI remains on port 8000. For production verification run `npm run lint`, `npm run typecheck`, `npm run test`, `npm run build`, then `npm start`.
+
+Set NEXT_PUBLIC_CLINIC_TIMEZONE to the backend CLINIC_TIMEZONE and rebuild after environment changes. Forms enter UTC explicitly; list/date filtering uses clinic time. No DB secrets belong in frontend settings. See [browser testing](BROWSER_TESTING.md) for isolated real-browser checks.
 
 ## Smoke-check starter
 
