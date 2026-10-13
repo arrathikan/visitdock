@@ -173,3 +173,8 @@ Explain which decisions were human-made, how the candidate validated AI output, 
 - Reproduced numeric epoch coercion (3 cases returned 201 instead of contract 422) and year-0001 Colombo UTC conversion overflow. All 4 regressions failed before fixes.
 - Require ISO datetime strings; guard both UTC day-boundary conversions. Full isolated PostgreSQL suite now **103 passed**; Ruff passed.
 - Q01 CI confirmed success: https://github.com/arrathikan/visitdock/actions/runs/38351468077. Human review pending.
+
+### R01 frontend precision correction — 2026-10-13
+- Reproduced doctor-only edit changing appointment_at from 09:30:42.123 to 09:30:00.000. The regression failed before the fix.
+- Preserve the original instant when the minute-level time input is unchanged; conversion is inside form error handling.
+- Actual frontend lint/typecheck, **9 tests**, and production build passed. E2E source formatted for review. Human review pending.

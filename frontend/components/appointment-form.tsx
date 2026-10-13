@@ -25,16 +25,19 @@ export default function AppointmentForm({
     setBusy(true);
     setError(null);
     const form = new FormData(event.currentTarget);
-    const payload: Payload = {
-      patient_name: String(form.get("patient_name")).trim(),
-      doctor: String(form.get("doctor")).trim(),
-      appointment_at: utcInstant(String(form.get("appointment_at"))),
-      appointment_type: form.get(
-        "appointment_type",
-      ) as Payload["appointment_type"],
-      status: form.get("status") as Payload["status"],
-    };
     try {
+      const payload: Payload = {
+        patient_name: String(form.get("patient_name")).trim(),
+        doctor: String(form.get("doctor")).trim(),
+        appointment_at: utcInstant(
+          String(form.get("appointment_at")),
+          appointment?.appointment_at,
+        ),
+        appointment_type: form.get(
+          "appointment_type",
+        ) as Payload["appointment_type"],
+        status: form.get("status") as Payload["status"],
+      };
       await request(appointment ? `/${appointment.id}` : "", {
         method: appointment ? "PUT" : "POST",
         body: JSON.stringify(payload),

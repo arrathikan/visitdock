@@ -66,7 +66,9 @@ export async function request<T>(
 export function utcInput(instant: string): string {
   return new Date(instant).toISOString().slice(0, 16);
 }
-export function utcInstant(input: string): string {
+export function utcInstant(input: string, original?: string): string {
+  // Preserve sub-minute precision if the user changes another field only.
+  if (original && input === utcInput(original)) return original;
   return new Date(`${input}:00Z`).toISOString();
 }
 export function formattedTime(instant: string): string {
