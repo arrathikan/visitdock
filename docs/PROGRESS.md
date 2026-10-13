@@ -130,3 +130,10 @@
 - Activated explicit CORS origins/methods, generic database 503 response, removed names from ORM repr; added regressions.
 - Actual checks: Ruff and scaffold passed; **99 PostgreSQL tests passed**; Alembic current and upgrade head on visitdock_test succeeded at 848b204929ed. No downgrade or development-data cleanup performed.
 - Backend gate passed. Human candidate review remains pending. Next: F01.
+
+### F01 — verified by Codex, 2026-10-13
+- Next.js 16.4 App Router, React, TypeScript and Tailwind visual shell with warm canvas, forest actions, compact top navigation and skip link.
+- Pinned frontend dependencies and npm lockfile. Node >=24.15 required; verified with bundled Node 24.19 (system Node 22.15 was too old for latest jsdom).
+- Actual checks: lint, typecheck, 1 rendered UI test, production webpack build passed. Fixed Next Link lint errors and test typing/configuration failures.
+- npm audit flagged a dev-only braces/micromatch dependency chain in Next ESLint; no unsafe forced downgrade applied. Final audit must record resolution or limitation.
+- Human review pending. Next: F02 mock workspace.

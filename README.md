@@ -2,7 +2,7 @@
 
 **Clinic Appointment Management System** — an internship take-home project.
 
-> **Current state:** AI-ready starter repository only. The application is **not implemented yet**. This starter contains the project brief, engineering decisions, AI instructions, prompts, local PostgreSQL infrastructure, and a GitHub Actions CI scaffold. Do **not** describe CRUD, tests, or deployment as completed until verified.
+> **Current state:** Backend CRUD, search/filter, timezone-aware pagination and browser access are implemented and verified through B06. Frontend implementation is in progress; no deployment is configured.
 
 ## What we're building
 
@@ -31,11 +31,11 @@ A small, usable web application that lets clinic staff **create, view, edit, del
 | Area | Planned | Implemented |
 | --- | --- | --- |
 | FastAPI foundation & `/health` endpoint | Yes | **Implemented (B01)** |
-| Create/view/edit/delete appointments | Yes | **Partial (B03)**: Create & List implemented; get-one, update, delete planned (B04) |
-| Search + filters | Yes | No (Planned B05) |
+| Create/view/edit/delete appointments | Yes | **Implemented (B04)** |
+| Search + filters | Yes | **Implemented (B05)** |
 | Validation and helpful errors | Yes | **Implemented for Create & List (B03)** |
 | PostgreSQL persistence + migrations | Yes | **Implemented (B02)** |
-| Automated API and browser tests | Yes | **58 automated backend tests (B01-B03)**; browser tests pending |
+| Automated API and browser tests | Yes | **99 automated backend tests (B01-B06)**; browser tests pending |
 | Dedicated test DB isolation & safeguards | Yes | **Implemented (B03)**: `visitdock_test` + transaction rollback |
 | Responsive VisitDock UI | Yes | No (Planned F01-F03) |
 | Local Docker PostgreSQL | Yes | **Verified & active on port 5433** |
@@ -127,7 +127,7 @@ alembic history
 ruff check .
 
 # 9. Run automated tests (runs both health and PostgreSQL integration tests)
-python -m pytest -q
+APP_ENV=test DATABASE_URL=postgresql+psycopg://visitdock:visitdock_dev_only@localhost:5433/visitdock_test python -m pytest -q
 
 # 10. Start local development server
 uvicorn app.main:app --reload --port 8000
