@@ -148,3 +148,9 @@
 - Native modal drawer and delete confirmation provide focus containment, Escape and focus restoration. UTC form entry is explicit; list/date filters use configured clinic timezone.
 - Actual lint/typecheck, **8 UI/API unit tests**, and production build passed. A regression exposed field error text changing accessible labels; stable input labels fixed it.
 - Real API server against visitdock_test and production frontend started. Browser happy-path verification is the next Q01 gate; not yet claimed passed. Human review pending.
+
+### Q01 — local verification, 2026-10-13
+- Added Playwright desktop/mobile real PostgreSQL CRUD and API error/retry checks; real CI PostgreSQL/API/frontend startup and browser execution. See [browser instructions](BROWSER_TESTING.md) for commands (from PROGRESS use BROWSER_TESTING.md).
+- Actual checks: **4 browser tests passed** using installed Chrome; **8 frontend tests**, lint, typecheck and production build passed. Desktop/mobile screenshots visually inspected; no horizontal overflow.
+- Initial browser failures were test selectors (status label and Next live region), corrected with role/scoped selectors and condition-based waits. Cleanup now uses an independent context; removed only 2 identified session-created records from interrupted attempts.
+- Feature source formatted in a separate style commit for readability. Candidate human review pending. CI execution verification follows push.
