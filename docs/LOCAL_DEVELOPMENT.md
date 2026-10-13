@@ -23,9 +23,25 @@ docker compose down
 
 The command above preserves data. To deliberately erase local database data: `docker compose down -v` — **destructive**.
 
-## Backend (after B01/B02)
+## Backend (verified in B01)
 
-The AI agent should add exact `python -m venv`, `pip install -e ".[dev]"`, Uvicorn, Alembic and Pytest commands to README when they actually work. Backend local config template: `backend/.env.example`. The database URL there points to host port 5433.
+The backend uses Python 3.12+ (tested with 3.13) and FastAPI.
+
+```bash
+cd backend
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows PowerShell: .venv\Scripts\Activate.ps1
+python -m pip install -e ".[dev]"
+ruff check .
+python -m pytest -q
+uvicorn app.main:app --reload --port 8000
+```
+
+- Process health endpoint: `http://localhost:8000/health`
+- Swagger UI: `http://localhost:8000/docs`
+- ReDoc: `http://localhost:8000/redoc`
+
+Backend local environment configuration template is in `backend/.env.example`. Database connection settings will be utilized starting from slice B02.
 
 ## Frontend (after F01)
 
