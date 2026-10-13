@@ -114,7 +114,11 @@ export default function AppointmentForm({
                 appointment ? utcInput(appointment.appointment_at) : ""
               }
               aria-invalid={!!error?.fields.appointment_at}
-              aria-describedby="time-help"
+              aria-describedby={
+                error?.fields.appointment_at
+                  ? "time-help appointment_at-error"
+                  : "time-help"
+              }
             />
             {fieldError("appointment_at")}
           </label>
@@ -125,8 +129,15 @@ export default function AppointmentForm({
           <label>
             Appointment type
             <select
+              aria-label="Appointment type"
               name="appointment_type"
               defaultValue={appointment?.appointment_type || "consultation"}
+              aria-invalid={!!error?.fields.appointment_type}
+              aria-describedby={
+                error?.fields.appointment_type
+                  ? "appointment_type-error"
+                  : undefined
+              }
             >
               <option value="consultation">Consultation</option>
               <option value="follow_up">Follow up</option>
@@ -137,8 +148,13 @@ export default function AppointmentForm({
           <label>
             Appointment status
             <select
+              aria-label="Appointment status"
               name="status"
               defaultValue={appointment?.status || "scheduled"}
+              aria-invalid={!!error?.fields.status}
+              aria-describedby={
+                error?.fields.status ? "status-error" : undefined
+              }
             >
               <option value="scheduled">Scheduled</option>
               <option value="completed">Completed</option>
