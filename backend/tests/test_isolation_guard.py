@@ -10,21 +10,11 @@ from tests.conftest import validate_test_database_target
 
 
 @pytest.mark.parametrize("invalid_env", ["development", "production", "staging", ""])
-def invalid_env_raises_usage_error(invalid_env: str) -> None:
-    pass
-
-
-def test_validate_target_rejects_non_test_env() -> None:
+def test_validate_target_rejects_non_test_env(invalid_env: str) -> None:
     """Verify that APP_ENV != 'test' raises a UsageError with actionable guidance."""
     with pytest.raises(pytest.UsageError, match="Unsafe test environment"):
         validate_test_database_target(
-            "development",
-            "postgresql+psycopg://visitdock:secret@localhost:5433/visitdock_test",
-        )
-
-    with pytest.raises(pytest.UsageError, match="Unsafe test environment"):
-        validate_test_database_target(
-            "production",
+            invalid_env,
             "postgresql+psycopg://visitdock:secret@localhost:5433/visitdock_test",
         )
 
