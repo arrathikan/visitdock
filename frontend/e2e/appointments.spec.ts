@@ -117,3 +117,73 @@ test("API failure can be retried and empty state is accessible", async ({
     .fill(`Fictional absent ${randomUUID()}`);
   await expect(page.getByText("No matching appointments")).toBeVisible();
 });
+test("maximum-length patient and doctor names wrap without clipping or overflow", async ({
+  page,
+}, testInfo) => {
+  const patient = `Fictional${"X".repeat(141)}`;
+  const doctor = `Fictional${"Y".repeat(141)}`;
+  // Only the list is mocked; no database record is created for this layout edge.
+  await page.route("**/api/v1/appointments?**", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        items: [
+          {
+            id: "06de9c6b-b96d-4c60-81c0-b89de0778523",
+            patient_name: patient,
+            doctor,
+            appointment_at: "2026-10-20T09:30:00Z",
+            appointment_type: "consultation",
+            status: "scheduled",
+            created_at: "2026-10-13T00:00:00Z",
+            updated_at: "2026-10-13T00:00:00Z",
+          },
+        ],
+        total: 1,
+        page: 1,
+        page_size: 20,
+      }),
+    }),
+  );
+  await page.goto("/");
+  const row = page.getByRole("row").filter({ hasText: patient });
+  await expect(row).toBeVisible();
+  const viewportWidth = page.viewportSize()!.width;
+  for (const [cell, name] of [
+    [row.locator("td").nth(1), patient],
+    [row.locator("td").nth(2), doctor],
+  ] as const) {
+    await expect(cell).toHaveText(name);
+    expect(
+      await cell.evaluate((element, viewport) => {
+        const bounds = element.getBoundingClientRect();
+        return (
+          element.scrollWidth <= element.clientWidth &&
+          bounds.left >= 0 &&
+          bounds.right <= viewport
+        );
+      }, viewportWidth),
+    ).toBe(true);
+  }
+  expect(
+    await page.evaluate(
+      (viewport) => document.documentElement.scrollWidth <= viewport,
+      viewportWidth,
+    ),
+  ).toBe(true);
+  await page.screenshot({
+    path: testInfo.outputPath("maximum-length-names.png"),
+    fullPage: true,
+  });
+  await row
+    .getByRole("button", { name: `Delete ${patient}`, exact: true })
+    .click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog.getByText(patient, { exact: true })).toBeVisible();
+  expect(
+    await dialog.evaluate(
+      (element) => element.scrollWidth <= element.clientWidth,
+    ),
+  ).toBe(true);
+  await dialog.getByRole("button", { name: "Keep appointment" }).click();
+});

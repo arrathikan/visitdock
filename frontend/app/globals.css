@@ -205,9 +205,14 @@ td {
   border-bottom: 1px solid var(--line);
   font-size: 13px;
 }
+td:nth-child(2),
+td:nth-child(3) {
+  overflow-wrap: anywhere;
+}
 .time {
   font-variant-numeric: tabular-nums;
   font-weight: 600;
+  white-space: nowrap;
 }
 .patient {
   font-size: 15px;
@@ -378,6 +383,7 @@ dialog.drawer {
 }
 .confirm {
   width: 460px;
+  overflow-wrap: anywhere;
 }
 .dialoghead {
   display: flex;

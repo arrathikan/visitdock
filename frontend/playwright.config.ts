@@ -6,7 +6,7 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: [["list"], ["html", { open: "never" }]],
   use: {
-    baseURL: "http://localhost:3000",
+    baseURL: process.env.E2E_BASE_URL || "http://localhost:3000",
     trace: "retain-on-failure",
     channel: process.env.PLAYWRIGHT_CHANNEL || undefined,
   },
