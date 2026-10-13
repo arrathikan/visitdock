@@ -70,6 +70,42 @@
   - Timezone-aware datetimes (+05:30) correctly persist the UTC instant in TIMESTAMPTZ.
   - `/health` endpoint remains completely independent of database connectivity.
 - **Open issues and risks:**
-  - HTTP endpoints for creating, listing, updating, and deleting appointments are not yet implemented (scheduled for B03–B05).
+  - Database test isolation in `backend/tests/conftest.py` identified as potentially destructive (erasing development database on run). Corrected in B03.
 - **Next smallest feature:**
   - **B03 — Create and List Appointments**: Pydantic request/response schemas, `POST /api/v1/appointments` with validation, and `GET /api/v1/appointments` listing.
+
+### B03 — Create & List Appointments API and Test Database Isolation (Verified)
+- **Date / slice:** 2026-10-13 / B03 — Create & List Appointments API
+- **Git branch:** `main`
+- **Exact files added or changed:**
+  - Added: `backend/app/appointments/schemas.py` (`AppointmentCreate`, `AppointmentResponse`, `AppointmentListResponse` Pydantic v2 schemas with trimming, bounds, timezone validation, and UTC ISO serialization)
+  - Added: `backend/app/appointments/router.py` (`POST /api/v1/appointments` returning 201, `GET /api/v1/appointments` with SQL-level pagination and deterministic ordering)
+  - Added: `backend/tests/test_isolation_guard.py` (10 regression tests for test target safeguards and transaction rollback isolation)
+  - Added: `backend/tests/test_appointments_api.py` (23 integration tests for POST/GET endpoints, validation bounds, invalid enums/dates, pagination, and tie-breaking)
+  - Updated: `backend/tests/conftest.py` (replaced unconditional table deletes with savepoint transaction rollback; added target environment/DB name safeguards and `client` fixture)
+  - Updated: `backend/app/main.py` (registered `appointments_router` under `/api/v1`)
+  - Updated: `README.md`, `backend/README.md`, `docs/LOCAL_DEVELOPMENT.md`, `docs/PROGRESS.md`, `AI_USAGE.md`
+- **Commands run + results:**
+  - `docker exec -i visitdock-db-1 psql -U visitdock -d postgres -c "CREATE DATABASE visitdock_test OWNER visitdock;"`: Database created.
+  - `alembic current`: Output `848b204929ed (head)`.
+  - `ruff check .`: Passed cleanly (All checks passed).
+  - `APP_ENV=test DATABASE_URL="postgresql+psycopg://visitdock:visitdock_dev_only@localhost:5433/visitdock_test" python -m pytest -v`: 58 passed in 0.27s (5 health + 8 DB + 12 isolation guard + 33 API tests).
+  - `APP_ENV=development python -m pytest -q`: Rejected immediately with `pytest.UsageError` (safeguard verified).
+  - `APP_ENV=test DATABASE_URL=".../visitdock" python -m pytest -q`: Rejected immediately with `pytest.UsageError` (safeguard verified).
+  - `python3 scripts/check_scaffold.py`: Passed (21 required files, 35 Markdown files).
+  - `uvicorn app.main:app --port 8000`:
+    - `curl -X POST /api/v1/appointments`: Returned HTTP 201 Created with generated UUID and UTC instant.
+    - `curl GET /api/v1/appointments?page=1&page_size=20`: Returned HTTP 200 OK with `{items, total, page, page_size}`.
+    - `curl POST with naive datetime / whitespace name`: Returned HTTP 422 Unprocessable Content.
+    - `curl GET with page_size=101`: Returned HTTP 422 Unprocessable Content.
+- **Behaviors manually verified:**
+  - Dedicated test database `visitdock_test` isolated from development database `visitdock`.
+  - Unconditional `delete(Appointment)` removed from fixtures; test runs leave zero residual data via transaction rollback.
+  - Smoke test appointment created in development database remains intact across test runs and API restart.
+  - `/health` endpoint remains unaffected and operational.
+  - `/docs` and `/openapi.json` display both appointment endpoints with complete schemas.
+- **Open issues and risks:**
+  - Single appointment retrieval (`GET /api/v1/appointments/{id}`), update (`PUT`), and delete (`DELETE`) are not yet implemented (scheduled for B04).
+  - Search and query filtering (`search`, `status`, `doctor`, `date`) are not yet implemented (scheduled for B05).
+- **Next smallest feature:**
+  - **B04 — Retrieve, Update, and Delete Appointments**: `GET /api/v1/appointments/{id}`, `PUT /api/v1/appointments/{id}`, `DELETE /api/v1/appointments/{id}` with 404 handling.

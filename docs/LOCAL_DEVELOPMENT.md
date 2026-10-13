@@ -23,7 +23,7 @@ docker compose down
 
 The command above preserves data. To deliberately erase local database data: `docker compose down -v` — **destructive**.
 
-## Backend (verified in B01 & B02)
+## Backend (verified in B01, B02 & B03)
 
 The backend uses Python 3.12+ (tested with 3.13), FastAPI, SQLAlchemy 2.x, Alembic, and PostgreSQL 17.
 
@@ -37,24 +37,35 @@ python3 -m venv .venv
 source .venv/bin/activate  # On Windows PowerShell: .venv\Scripts\Activate.ps1
 python -m pip install -e ".[dev]"
 
-# 3. Apply database migrations
+# 3. Apply database migrations to development database
 alembic upgrade head
 
 # 4. Check migration status
 alembic current
 alembic history
 
-# 5. Linting and automated tests
+# 5. Linting
 ruff check .
-python -m pytest -q
 
-# 6. Start development server
+# 6. Automated tests (requires dedicated test database)
+# Create test database once:
+docker exec -i visitdock-db-1 psql -U visitdock -d postgres -c "CREATE DATABASE visitdock_test OWNER visitdock;"
+
+# Run tests with test database isolation:
+APP_ENV=test DATABASE_URL="postgresql+psycopg://visitdock:visitdock_dev_only@localhost:5433/visitdock_test" python -m pytest -q
+
+# 7. Start development server
 uvicorn app.main:app --reload --port 8000
 ```
 
 - Process health endpoint: `http://localhost:8000/health`
+- Create appointment endpoint: `POST http://localhost:8000/api/v1/appointments`
+- List appointments endpoint: `GET http://localhost:8000/api/v1/appointments?page=1&page_size=20`
 - Swagger UI: `http://localhost:8000/docs`
 - ReDoc: `http://localhost:8000/redoc`
+
+### Test Database Isolation Safeguards
+Pytest requires `APP_ENV=test` and a dedicated test database (e.g. `visitdock_test`). Runs against the development database (`visitdock`) or non-test databases are automatically blocked to prevent data loss. Tests run inside nested savepoint transactions that roll back cleanly upon completion.
 
 Backend local environment configuration template is in `backend/.env.example`. Environment variables override local `.env` settings. Local PostgreSQL runs on host port `5433` (`DATABASE_URL=postgresql+psycopg://visitdock:visitdock_dev_only@localhost:5433/visitdock`), while CI runs on port `5432`.
 

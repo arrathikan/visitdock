@@ -10,6 +10,7 @@ The take-home task explicitly allows AI, and evaluators want to understand **how
 | --- | --- | --- | --- |
 | Gemini 3.8 Flash (Medium) / Antigravity | B01 FastAPI backend foundation, tests, configuration, documentation | 2026-10-13 / B01 | Verified commands, tests, endpoints, and diffs |
 | Gemini 3.8 Flash (Medium) / Antigravity | B02 PostgreSQL persistence, Alembic migrations, DB integration tests | 2026-10-13 / B02 | Verified Docker Postgres, Alembic up/down, Pytest suite |
+| Gemini 3.8 Flash (Medium) / Antigravity | B03 Create & List Appointments API, test database isolation safeguards | 2026-10-13 / B03 | Verified test isolation, rollback fixture, endpoint responses, curl smoke tests |
 
 ## Slices
 
@@ -63,6 +64,45 @@ The take-home task explicitly allows AI, and evaluators want to understand **how
   - `./.venv/bin/ruff check .`: All checks passed.
   - `./.venv/bin/python -m pytest -v`: 13 passed in 0.21s.
   - `python3 scripts/check_scaffold.py`: Passed (21 required files, 35 Markdown files).
+- **Candidate review & reflection:**
+  - _Candidate to review and record notes before final submission._
+
+### B03 Create & List Appointments API and Test Database Isolation — 2026-10-13
+
+- **Goal:** Correct potentially destructive database test isolation in `backend/tests/conftest.py`, implement Pydantic v2 schemas and REST endpoints for `POST /api/v1/appointments` and `GET /api/v1/appointments`, add automated tests, and ensure full test isolation without residual data.
+- **AI tool used:** Gemini 3.8 Flash (Medium) via Antigravity IDE
+- **Prompt / reference:** [`prompts/B03_CREATE_LIST.md`](prompts/B03_CREATE_LIST.md) and B03 user assignment prompt.
+- **AI suggestion/output:** Created `backend/app/appointments/schemas.py`, `backend/app/appointments/router.py`, registered router in `backend/app/main.py`, overhauled `backend/tests/conftest.py`, created `backend/tests/test_isolation_guard.py` and `backend/tests/test_appointments_api.py`.
+- **What was checked:**
+  - Reviewed test target safety guards: verified pytest rejects execution if `APP_ENV != "test"` or if database is not recognized as a dedicated test database (e.g. `visitdock`).
+  - Reviewed test session lifecycle: replaced destructive `cleanup_session.execute(delete(Appointment))` with transaction savepoint rollbacks (`join_transaction_mode="create_savepoint"`).
+  - Verified Pydantic validation: trimmed strings, rejection of whitespace-only names, max length 150 bounds, timezone awareness validation (rejecting naive datetimes), rejection of unexpected client fields (`extra="forbid"`), and enum validation.
+  - Verified UTC instant preservation: timestamps serialize consistently to ISO 8601 strings ending in `Z`.
+  - Verified deterministic list pagination: SQL-level `offset`/`limit`, accurate `total` count, sorting by `appointment_at ASC, id ASC`.
+  - Ran full test suite (58 tests passing).
+  - Started live Uvicorn dev server and verified `/health`, `/docs`, `/openapi.json`, and manual `POST` and `GET` requests via `curl`.
+  - Verified that manual smoke test data created in `visitdock` development database persisted across API restarts and was not purged by test runs.
+- **Issues found:**
+  1. *Priority Review Finding:* B02 `backend/tests/conftest.py` executed migrations on whatever database was configured in `DATABASE_URL` and ran an unconditional `delete(Appointment)` in teardown. Running tests without environment overrides would delete all development appointments in `visitdock`.
+  2. *Savepoint visibility in direct session instantiation:* During initial transaction savepoint implementation, `tests/test_database.py` imported `SessionLocal` into its module namespace at import time. Calling `with SessionLocal() as new_session:` created an unjoined second connection that could not see uncommitted savepoint rows.
+  3. *Unused imports:* Ruff flagged unused imports in test files (`app.db.session.engine` in `test_isolation_guard.py` and `datetime.timezone` in `test_appointments_api.py`).
+- **Corrections and reasons:**
+  1. Added `validate_test_database_target` to `conftest.py` requiring `APP_ENV=test` and an explicitly recognized test database name (e.g., `visitdock_test`). Switched session fixture to an outer transaction with savepoints that automatically rolls back, eliminating all residual test data and removing table-wide delete queries.
+  2. Monkeypatched `tests.test_database.SessionLocal` in addition to `app.db.session.SessionLocal` in the `db_session` fixture so any auxiliary test sessions share the same connection and savepoint scope.
+  3. Removed unused imports and formatted import blocks to pass `ruff check .` with zero warnings.
+- **Commands actually run and outcome:**
+  - `docker exec -i visitdock-db-1 psql -U visitdock -d postgres -c "CREATE DATABASE visitdock_test OWNER visitdock;"`: Exit code 0.
+  - `APP_ENV=test DATABASE_URL="postgresql+psycopg://visitdock:visitdock_dev_only@localhost:5433/visitdock_test" python -m pytest -v`: Exit code 0 (58 passed in 0.27s).
+  - `APP_ENV=development python -m pytest -q`: Exit code 1 (safely halted with `pytest.UsageError: Unsafe test environment`).
+  - `APP_ENV=test DATABASE_URL="postgresql+psycopg://visitdock:visitdock_dev_only@localhost:5433/visitdock" python -m pytest -q`: Exit code 1 (safely halted with `pytest.UsageError: Unsafe target database 'visitdock'`).
+  - `ruff check .`: Exit code 0 (All checks passed).
+  - `python3 scripts/check_scaffold.py`: Exit code 0 (Starter checks passed).
+  - `uvicorn app.main:app --port 8000`:
+    - `curl -X POST http://localhost:8000/api/v1/appointments`: HTTP 201 Created.
+    - `curl http://localhost:8000/api/v1/appointments?page=1&page_size=20`: HTTP 200 OK.
+    - `curl` with invalid payload: HTTP 422 Unprocessable Content.
+    - `curl` with page_size=101: HTTP 422 Unprocessable Content.
+  - `docker exec visitdock-db-1 psql -U visitdock -d visitdock -c "SELECT ..."`: Confirmed development appointment record was preserved.
 - **Candidate review & reflection:**
   - _Candidate to review and record notes before final submission._
 

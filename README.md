@@ -31,11 +31,12 @@ A small, usable web application that lets clinic staff **create, view, edit, del
 | Area | Planned | Implemented |
 | --- | --- | --- |
 | FastAPI foundation & `/health` endpoint | Yes | **Implemented (B01)** |
-| Create/view/edit/delete appointments | Yes | No (Planned B03-B04) |
+| Create/view/edit/delete appointments | Yes | **Partial (B03)**: Create & List implemented; get-one, update, delete planned (B04) |
 | Search + filters | Yes | No (Planned B05) |
-| Validation and helpful errors | Yes | No (Planned B03-B06) |
+| Validation and helpful errors | Yes | **Implemented for Create & List (B03)** |
 | PostgreSQL persistence + migrations | Yes | **Implemented (B02)** |
-| Automated API and browser tests | Yes | **Backend health & PostgreSQL integration tests implemented (B02)**; browser tests pending |
+| Automated API and browser tests | Yes | **58 automated backend tests (B01-B03)**; browser tests pending |
+| Dedicated test DB isolation & safeguards | Yes | **Implemented (B03)**: `visitdock_test` + transaction rollback |
 | Responsive VisitDock UI | Yes | No (Planned F01-F03) |
 | Local Docker PostgreSQL | Yes | **Verified & active on port 5433** |
 | GitHub Actions CI | Yes | **Scaffold check + backend CI active with PostgreSQL 17** |
