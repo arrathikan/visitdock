@@ -1,0 +1,19 @@
+# EXAMPLE ONLY — NOT ACTIVE. Do not copy into .github/workflows until a real
+# hosting provider, deployment commands, environment and secrets are selected.
+# Replace the explicit guard with tested deployment steps after approval.
+name: Example manual deployment (DISABLED TEMPLATE)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  deployment-placeholder:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Guard — no provider selected
+        run: |
+          echo "No hosting target or deployment credentials have been selected."
+          exit 1
+# FUTURE: add CI dependency, protected env approval, provider auth,
+# migration, backend and frontend deploy, health smoke test, rollback guide.

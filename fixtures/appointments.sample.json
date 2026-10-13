@@ -1,0 +1,37 @@
+[
+  {
+    "patient_name": "Emma Wilson",
+    "appointment_at": "2026-10-20T09:30:00+05:30",
+    "doctor": "Dr. Maya Carter",
+    "appointment_type": "consultation",
+    "status": "scheduled"
+  },
+  {
+    "patient_name": "Noah Bennett",
+    "appointment_at": "2026-10-20T10:15:00+05:30",
+    "doctor": "Dr. Arjun Patel",
+    "appointment_type": "follow_up",
+    "status": "scheduled"
+  },
+  {
+    "patient_name": "Olivia Hart",
+    "appointment_at": "2026-10-20T11:00:00+05:30",
+    "doctor": "Dr. Maya Carter",
+    "appointment_type": "check_up",
+    "status": "completed"
+  },
+  {
+    "patient_name": "James Cooper",
+    "appointment_at": "2026-10-21T14:00:00+05:30",
+    "doctor": "Dr. Leena Morris",
+    "appointment_type": "consultation",
+    "status": "cancelled"
+  },
+  {
+    "patient_name": "Ava Robinson",
+    "appointment_at": "2026-10-21T16:30:00+05:30",
+    "doctor": "Dr. Arjun Patel",
+    "appointment_type": "follow_up",
+    "status": "scheduled"
+  }
+]

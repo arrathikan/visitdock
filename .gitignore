@@ -1,0 +1,44 @@
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+!**/.env.example
+**/.env.local
+**/.env.*.local
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+*.egg-info/
+.coverage
+htmlcov/
+
+# JavaScript / Next.js
+node_modules/
+.next/
+out/
+dist/
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+
+# IDE / platform
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.swp
+*.log
+
+# Local artifacts
+*.sqlite3
+*.db
+.zip-staging/

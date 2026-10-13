@@ -1,0 +1,6 @@
+---
+description: VisitDock project context, backend-first incremental engineering rules
+alwaysApply: true
+---
+
+Read `AGENTS.md` (authoritative), `docs/PROGRESS.md`, and the active `prompts/*.md` before coding. Keep changes within the chosen small slice. Follow the FastAPI/PostgreSQL backend-first plan, then the restrained VisitDock Next.js UI. Verify code and tests; report evidence and preserve user changes. Use fictional patient data only.
