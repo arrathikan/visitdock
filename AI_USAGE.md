@@ -187,3 +187,7 @@ Explain which decisions were human-made, how the candidate validated AI output, 
 - Rewrote current-state/setup/API/CI docs, retained historical reports and explicitly distinguished inherited human-validation claims from this AI session.
 - Implementation complete for agreed scope; candidate personal review/reflection, company submission rules and manual restart walkthrough remain candidate-owned. No cross-mode memory sync claimed. Durable handoff is in these documents.
 - Commits: B04 bdd831c; B05 11239c7; B06 bdd6bd0; F01 54fbe99; F02 288b69d; F03 7cd20b8; format 8bb8e91; Q01 5ccc8c4; backend audit c788ced; frontend audit dcb268a; reproducible backend 7354eb0. All pushed normally to main.
+
+### Final CI evidence
+- Final code/build commit 7354eb0: GitHub run 38352870395 completed successfully. Audit fixes dcb268a: run 38352465799 completed successfully. Q01 run 38351468077 confirmed actual browser step success, not just scaffold checks.
+- Final documentation is a separate commit; candidate personal reflection remains unfilled.

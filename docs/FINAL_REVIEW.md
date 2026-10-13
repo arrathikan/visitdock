@@ -22,7 +22,7 @@ Earlier B06 fixes activated explicit CORS, sanitized database 503 responses and 
 - Alembic current and upgrade head on visitdock_test: revision **848b204929ed**. No destructive downgrade performed by Codex.
 - Frontend Node 24.19: `npm run lint`, `npm run typecheck`, `npm run test`: **9 passed**; `npm run build`: production build passed.
 - `PLAYWRIGHT_CHANNEL=chrome npm run test:e2e`: **4 passed** against real PostgreSQL/FastAPI, desktop and Chromium-emulated mobile. Desktop/mobile screenshots inspected and overflow assertion passed. The API-failure test alone intercepts network responses.
-- Q01 GitHub run [38351468077](https://github.com/arrathikan/visitdock/actions/runs/38351468077): scaffold, detection, backend, frontend and actual real PostgreSQL browser step all succeeded. Final-head verification is recorded in PROGRESS.md.
+- Q01 GitHub run [38351468077](https://github.com/arrathikan/visitdock/actions/runs/38351468077): scaffold, detection, backend, frontend and actual real PostgreSQL browser step all succeeded. Final implementation/build commit 7354eb0 also passed [run 38352870395](https://github.com/arrathikan/visitdock/actions/runs/38352870395); subsequent documentation-only CI is reported in the conversation.
 - Production `npm audit --omit=dev`: **0 vulnerabilities**. Full npm audit: five high entries from one development-only braces/micromatch/fast-glob chain under Next ESLint. The advisory [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) describes deeply nested-pattern denial of service. No user pattern reaches this lint path; do not treat untrusted lint configuration as safe. Audit suggested a major Next ESLint downgrade, which was not applied. Track an upstream compatible fix.
 
 ## Security and scope
