@@ -132,3 +132,9 @@ Explain which decisions were human-made, how the candidate validated AI output, 
 - Checks actually run: Ruff passed; dedicated visitdock_test PostgreSQL suite: **76 passed**. Initial sandbox execution could not connect; approved rerun passed.
 - AI review: inspected full-field validation, immutable metadata, deletion persistence, and timestamp behavior. Human review remains pending.
 - Next: B05 search/filter/date semantics.
+
+### B05 — verified by Codex, 2026-10-13
+- Added case-insensitive patient/doctor search, exact doctor and status filters, clinic-date filtering and bounded SQL pagination.
+- Escaped SQL LIKE wildcards so search remains literal; validated IANA timezone configuration.
+- Actual checks: Ruff passed; **95 PostgreSQL-backed tests passed**, including 23/25-hour DST days and Colombo inclusive/exclusive boundaries.
+- AI review completed; candidate human review pending. Next: B06 audit/hardening.

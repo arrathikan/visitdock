@@ -1,18 +1,21 @@
 """FastAPI router for appointment endpoints."""
 
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime, time, timedelta
+from datetime import date as CalendarDate
 from uuid import UUID
+from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
-from app.appointments.models import Appointment
+from app.appointments.models import Appointment, AppointmentStatus
 from app.appointments.schemas import (
     AppointmentCreate,
     AppointmentListResponse,
     AppointmentResponse,
 )
+from app.core.config import settings
 from app.db.session import get_db
 
 router = APIRouter(prefix="/appointments", tags=["Appointments"])
@@ -55,16 +58,43 @@ def create_appointment(
     description="Retrieve a paginated list of clinic appointments ordered deterministically.",
 )
 def list_appointments(
+    search: str | None = Query(default=None, max_length=150),
+    doctor: str | None = Query(default=None, max_length=150),
+    status: AppointmentStatus | None = Query(default=None),
+    date: CalendarDate | None = Query(default=None),
     page: int = Query(default=1, ge=1, description="Page number (1-indexed)"),
     page_size: int = Query(default=20, ge=1, le=100, description="Items per page (max 100)"),
     db: Session = Depends(get_db),
 ) -> AppointmentListResponse:
     """List appointments with database-level pagination and stable sorting."""
-    total = db.scalar(select(func.count()).select_from(Appointment)) or 0
+    filters = []
+    if search and search.strip():
+        text = search.strip()
+        filters.append(or_(
+            Appointment.patient_name.icontains(text, autoescape=True),
+            Appointment.doctor.icontains(text, autoescape=True),
+        ))
+    if doctor is not None:
+        filters.append(func.lower(Appointment.doctor) == doctor.strip().lower())
+    if status is not None:
+        filters.append(Appointment.status == status.value)
+    if date is not None:
+        timezone = ZoneInfo(settings.CLINIC_TIMEZONE)
+        start = datetime.combine(date, time.min, tzinfo=timezone)
+        try:
+            end = datetime.combine(date + timedelta(days=1), time.min, tzinfo=timezone)
+        except OverflowError:
+            raise HTTPException(status_code=422, detail="Date exceeds supported range") from None
+        filters.extend([
+            Appointment.appointment_at >= start.astimezone(UTC),
+            Appointment.appointment_at < end.astimezone(UTC),
+        ])
+    total = db.scalar(select(func.count()).select_from(Appointment).where(*filters)) or 0
     offset = (page - 1) * page_size
 
     query = (
         select(Appointment)
+        .where(*filters)
         .order_by(Appointment.appointment_at.asc(), Appointment.id.asc())
         .offset(offset)
         .limit(page_size)

@@ -2,7 +2,9 @@
 
 from pathlib import Path
 from typing import Literal
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Base directory for backend (where .env may optionally reside)
@@ -27,6 +29,15 @@ class Settings(BaseSettings):
     )
     CLINIC_TIMEZONE: str = "UTC"
     CORS_ORIGINS: str = "http://localhost:3000"
+
+    @field_validator("CLINIC_TIMEZONE")
+    @classmethod
+    def validate_timezone(cls, value: str) -> str:
+        try:
+            ZoneInfo(value)
+        except (ZoneInfoNotFoundError, ValueError):
+            raise ValueError("CLINIC_TIMEZONE must be an IANA timezone") from None
+        return value
 
 
 settings = Settings()
