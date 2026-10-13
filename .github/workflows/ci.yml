@@ -69,9 +69,11 @@ jobs:
         with:
           python-version: '3.13'
           cache: pip
-          cache-dependency-path: backend/pyproject.toml
+          cache-dependency-path: backend/requirements-dev.lock
       - name: Install backend and development dependencies
-        run: python -m pip install -e ".[dev]"
+        run: |
+          python -m pip install -r requirements-dev.lock
+          python -m pip install -e ".[dev]" --no-deps
       - name: Lint backend
         run: ruff check .
       - name: Test backend
@@ -129,7 +131,8 @@ jobs:
           python-version: '3.13'
       - name: Install E2E API and browser
         run: |
-          python -m pip install -e "../backend[dev]"
+          python -m pip install -r ../backend/requirements-dev.lock
+          python -m pip install -e "../backend[dev]" --no-deps
           npx playwright install --with-deps chromium
       - name: Start real API and frontend
         run: |
